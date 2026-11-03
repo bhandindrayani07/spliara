@@ -36,7 +36,16 @@ Spliara is a shared-expense management platform that helps friends, roommates, f
 - Payment reminders
 - AI-powered expense insights
 - Mobile application using React Native and Expo
+  
+## Project Goals
 
+Spliara aims to make shared expense management simple and transparent.
+
+- Reduce confusion when splitting group expenses.
+- Keep track of payments between group members.
+- Make expense sharing easier for roommates, friends, and travel groups.
+- Provide a clear view of group balances.
+  
 ## Project Status
 
 Currently in the planning and design phase as part of the ALTA BUILDER 30 — 30 Day Project Challenge.
