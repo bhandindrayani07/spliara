@@ -2,13 +2,17 @@ const express = require("express");
 require("dotenv").config();
 
 const pool = require("./config/db");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Health check with database connection test
+// Authentication routes
+app.use("/api/auth", authRoutes);
+
+// Health check
 app.get("/health", async (req, res) => {
   try {
     await pool.query("SELECT 1");
@@ -24,7 +28,7 @@ app.get("/health", async (req, res) => {
 
     res.status(500).json({
       status: "error",
-      message: "Backend is running, but database connection failed.",
+      message: "Database connection failed.",
       database: "disconnected"
     });
   }
