@@ -4,15 +4,33 @@ require("dotenv").config();
 
 const pool = require("./config/db");
 const authRoutes = require("./routes/auth");
+const groupRoutes = require("./routes/groups");
 const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(express.json());
 
-// Authentication routes
+// ==========================================
+// AUTHENTICATION ROUTES
+// ==========================================
+
+// POST /api/auth/register
+// POST /api/auth/login
 app.use("/api/auth", authRoutes);
+
+// ==========================================
+// GROUP ROUTES
+// ==========================================
+
+// POST   /api/groups
+// GET    /api/groups
+// GET    /api/groups/:id
+// PUT    /api/groups/:id
+// DELETE /api/groups/:id
+app.use("/api/groups", groupRoutes);
 
 // ==========================================
 // PROTECTED PROFILE API
@@ -60,7 +78,7 @@ app.get("/health", async (req, res) => {
   try {
     await pool.query("SELECT 1");
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       message: "Spliara backend is running!",
       database: "connected",
@@ -70,13 +88,17 @@ app.get("/health", async (req, res) => {
   } catch (error) {
     console.error("Database health check failed:", error.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "Database connection failed.",
       database: "disconnected"
     });
   }
 });
+
+// ==========================================
+// START SERVER
+// ==========================================
 
 app.listen(PORT, () => {
   console.log(`Spliara backend running at http://localhost:${PORT}`);
