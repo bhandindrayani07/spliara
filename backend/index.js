@@ -5,6 +5,7 @@ require("dotenv").config();
 const pool = require("./config/db");
 const authRoutes = require("./routes/auth");
 const groupRoutes = require("./routes/groups");
+const expenseRoutes = require("./routes/expenses");
 const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
@@ -17,24 +18,22 @@ app.use(express.json());
 // AUTHENTICATION ROUTES
 // ==========================================
 
-// POST /api/auth/register
-// POST /api/auth/login
 app.use("/api/auth", authRoutes);
 
 // ==========================================
 // GROUP ROUTES
 // ==========================================
 
-// POST   /api/groups
-// GET    /api/groups
-// GET    /api/groups/:id
-// PUT    /api/groups/:id
-// DELETE /api/groups/:id
 app.use("/api/groups", groupRoutes);
 
 // ==========================================
+// EXPENSE ROUTES
+// ==========================================
+
+app.use("/api/expenses", expenseRoutes);
+
+// ==========================================
 // PROTECTED PROFILE API
-// GET /api/auth/profile
 // ==========================================
 
 app.get("/api/auth/profile", authMiddleware, async (req, res) => {
@@ -71,7 +70,6 @@ app.get("/api/auth/profile", authMiddleware, async (req, res) => {
 
 // ==========================================
 // HEALTH CHECK
-// GET /health
 // ==========================================
 
 app.get("/health", async (req, res) => {
