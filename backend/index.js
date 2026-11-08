@@ -1,5 +1,6 @@
 
 const express = require("express");
+const path = require("path");
 require("dotenv").config();
 
 const pool = require("./config/db");
@@ -11,8 +12,14 @@ const authMiddleware = require("./middleware/authMiddleware");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// ==========================================
+// MIDDLEWARE
+// ==========================================
+
 app.use(express.json());
+
+// Serve frontend files
+app.use(express.static(path.join(__dirname, "../frontend")));
 
 // ==========================================
 // AUTHENTICATION ROUTES
@@ -37,35 +44,35 @@ app.use("/api/expenses", expenseRoutes);
 // ==========================================
 
 app.get("/api/auth/profile", authMiddleware, async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT id, name, email, created_at
-       FROM users
-       WHERE id = $1`,
-      [req.user.userId]
-    );
+    try {
+        const result = await pool.query(
+            `SELECT id, name, email, created_at
+             FROM users
+             WHERE id = $1`,
+            [req.user.userId]
+        );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        status: "error",
-        message: "User not found."
-      });
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                status: "error",
+                message: "User not found."
+            });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            message: "Profile accessed successfully!",
+            user: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error("Profile error:", error.message);
+
+        return res.status(500).json({
+            status: "error",
+            message: "Unable to retrieve profile."
+        });
     }
-
-    return res.status(200).json({
-      status: "success",
-      message: "Profile accessed successfully!",
-      user: result.rows[0]
-    });
-
-  } catch (error) {
-    console.error("Profile error:", error.message);
-
-    return res.status(500).json({
-      status: "error",
-      message: "Unable to retrieve profile."
-    });
-  }
 });
 
 // ==========================================
@@ -73,25 +80,25 @@ app.get("/api/auth/profile", authMiddleware, async (req, res) => {
 // ==========================================
 
 app.get("/health", async (req, res) => {
-  try {
-    await pool.query("SELECT 1");
+    try {
+        await pool.query("SELECT 1");
 
-    return res.status(200).json({
-      status: "success",
-      message: "Spliara backend is running!",
-      database: "connected",
-      timestamp: new Date().toISOString()
-    });
+        return res.status(200).json({
+            status: "success",
+            message: "Spliara backend is running!",
+            database: "connected",
+            timestamp: new Date().toISOString()
+        });
 
-  } catch (error) {
-    console.error("Database health check failed:", error.message);
+    } catch (error) {
+        console.error("Database health check failed:", error.message);
 
-    return res.status(500).json({
-      status: "error",
-      message: "Database connection failed.",
-      database: "disconnected"
-    });
-  }
+        return res.status(500).json({
+            status: "error",
+            message: "Database connection failed.",
+            database: "disconnected"
+        });
+    }
 });
 
 // ==========================================
@@ -99,5 +106,5 @@ app.get("/health", async (req, res) => {
 // ==========================================
 
 app.listen(PORT, () => {
-  console.log(`Spliara backend running at http://localhost:${PORT}`);
+    console.log(`Spliara backend running at http://localhost:${PORT}`);
 });
