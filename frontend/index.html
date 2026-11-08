@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spliara | Split Expenses Smarter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <a href="#" class="logo">spliara<span>.</span></a>
+        <p>Shared expenses, simplified.</p>
+    </header>
+
+    <main class="auth-container">
+
+        <section class="welcome-section">
+            <span class="eyebrow">SMART EXPENSE SHARING</span>
+
+            <h1>Good friends.<br>
+                Great trips.<br>
+                <span>No money confusion.</span>
+            </h1>
+
+            <p>
+                Track shared expenses, split bills fairly,
+                and keep every group organised with Spliara.
+            </p>
+
+            <div class="features">
+                <div>✓ Easy expense tracking</div>
+                <div>✓ Fair expense splitting</div>
+                <div>✓ Simple group management</div>
+            </div>
+        </section>
+
+        <section class="auth-card">
+
+            <div class="card-heading">
+                <h2 id="formTitle">Welcome back!</h2>
+                <p id="formSubtitle">Log in to continue to your account.</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button id="loginTab" class="tab active" type="button">
+                    Login
+                </button>
+
+                <button id="signupTab" class="tab" type="button">
+                    Sign Up
+                </button>
+            </div>
+
+            <form id="authForm">
+
+                <div class="form-group" id="nameGroup" hidden>
+                    <label for="name">Full name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your name"
+                        autocomplete="name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Login to Spliara
+                </button>
+
+                <p id="message" class="message" aria-live="polite"></p>
+
+            </form>
+
+            <p class="switch-text" id="switchText">
+                Don't have an account?
+                <button id="switchBtn" type="button">Sign up</button>
+            </p>
+
+        </section>
+
+    </main>
+
+    <footer>
+        © 2026 Spliara. Made for better shared experiences.
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
