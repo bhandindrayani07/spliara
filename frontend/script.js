@@ -141,15 +141,23 @@ authForm.addEventListener("submit", async (event) => {
         if (currentMode === "signup") {
             message.textContent =
                 "Account created successfully! You can now log in.";
+
+            message.style.color = "#23834c";
+
         } else {
-            message.textContent = "Login successful!";
-
-            if (data.token) {
-                sessionStorage.setItem("spliaraToken", data.token);
+            if (!data.token) {
+                throw new Error("Login succeeded but no token was received.");
             }
-        }
 
-        message.style.color = "#23834c";
+            sessionStorage.setItem("spliaraToken", data.token);
+
+            message.textContent = "Login successful!";
+            message.style.color = "#23834c";
+
+            // Open dashboard after successful login
+            window.location.href = "dashboard.html";
+            return;
+        }
 
     } catch (error) {
         message.textContent =
