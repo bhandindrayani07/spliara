@@ -38,6 +38,11 @@ button {
     transition: 0.2s ease;
 }
 
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .navbar {
     min-height: 75px;
     padding: 15px 7%;
@@ -160,6 +165,7 @@ button {
 .group-card h3 {
     font-size: 19px;
     margin-bottom: 10px;
+    overflow-wrap: anywhere;
 }
 
 .group-card p {
@@ -173,6 +179,41 @@ button {
     color: var(--sage-dark);
     margin-top: 18px;
     font-weight: 700;
+}
+
+/* Group and expense action buttons */
+
+.item-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.action-btn {
+    padding: 8px 13px;
+    font-size: 13px;
+    border-radius: 8px;
+}
+
+.edit-btn {
+    background: var(--sage-light);
+    color: var(--sage-dark);
+}
+
+.edit-btn:hover {
+    background: var(--sage);
+    color: white;
+}
+
+.delete-btn {
+    background: #F8E8E2;
+    color: #A64B35;
+}
+
+.delete-btn:hover {
+    background: #A64B35;
+    color: white;
 }
 
 .form-container {
@@ -198,6 +239,7 @@ button {
     border-radius: 9px;
     background: var(--ivory);
     outline: none;
+    color: var(--walnut);
 }
 
 .form-container input:focus {
@@ -213,6 +255,10 @@ button {
 .form-actions button[type="button"] {
     background: var(--amber);
     color: white;
+}
+
+.form-actions button[type="button"]:hover {
+    background: var(--walnut);
 }
 
 .hidden {
@@ -268,6 +314,7 @@ button {
 .expense-card h3 {
     font-size: 16px;
     margin-bottom: 6px;
+    overflow-wrap: anywhere;
 }
 
 .expense-card p {
@@ -280,10 +327,33 @@ button {
     white-space: nowrap;
 }
 
+.expense-info {
+    min-width: 0;
+}
+
+.expense-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
 #dashboardMessage {
     margin-top: 20px;
     color: var(--sage-dark);
     font-weight: 600;
+    line-height: 1.5;
+}
+
+#dashboardMessage.error {
+    color: #A64B35;
+}
+
+.loading-message {
+    color: var(--muted);
+    padding: 18px 0;
+    text-align: center;
 }
 
 @media (max-width: 600px) {
@@ -312,5 +382,18 @@ button {
 
     .expense-card {
         align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .expense-actions {
+        justify-content: flex-start;
+    }
+
+    .form-actions {
+        flex-wrap: wrap;
+    }
+
+    .form-actions button {
+        flex: 1;
     }
 }

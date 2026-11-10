@@ -59,6 +59,7 @@
         </section>
 
         <section id="groupDetails" class="group-details hidden">
+
             <button id="backToGroupsBtn" class="back-btn">
                 ← Back to groups
             </button>
@@ -69,7 +70,28 @@
                     <h2 id="selectedGroupName">Group Name</h2>
                     <p>All expenses for this group.</p>
                 </div>
-                <button id="addExpenseBtn">+ Add Expense</button>
+
+                <div class="form-actions">
+                    <button id="editGroupBtn" type="button">Edit Group</button>
+                    <button id="deleteGroupBtn" type="button">Delete Group</button>
+                    <button id="addExpenseBtn" type="button">+ Add Expense</button>
+                </div>
+            </div>
+
+            <div id="editGroupContainer" class="form-container hidden">
+                <form id="editGroupForm">
+                    <label for="editGroupName">Edit group name</label>
+                    <input
+                        type="text"
+                        id="editGroupName"
+                        maxlength="100"
+                        required
+                    >
+                    <div class="form-actions">
+                        <button type="submit">Update Group</button>
+                        <button type="button" id="cancelEditGroupBtn">Cancel</button>
+                    </div>
+                </form>
             </div>
 
             <div class="total-card">
@@ -100,6 +122,31 @@
                     <div class="form-actions">
                         <button type="submit">Save Expense</button>
                         <button type="button" id="cancelExpenseBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="editExpenseContainer" class="form-container hidden">
+                <form id="editExpenseForm">
+                    <label for="editExpenseDescription">Edit description</label>
+                    <input
+                        type="text"
+                        id="editExpenseDescription"
+                        required
+                    >
+
+                    <label for="editExpenseAmount">Edit amount (₹)</label>
+                    <input
+                        type="number"
+                        id="editExpenseAmount"
+                        min="0.01"
+                        step="0.01"
+                        required
+                    >
+
+                    <div class="form-actions">
+                        <button type="submit">Update Expense</button>
+                        <button type="button" id="cancelEditExpenseBtn">Cancel</button>
                     </div>
                 </form>
             </div>
