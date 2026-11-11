@@ -7,6 +7,7 @@ const pool = require("./config/db");
 const authRoutes = require("./routes/auth");
 const groupRoutes = require("./routes/groups");
 const expenseRoutes = require("./routes/expenses");
+const financeRoutes = require("./routes/finance");
 const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
@@ -38,6 +39,12 @@ app.use("/api/groups", groupRoutes);
 // ==========================================
 
 app.use("/api/expenses", expenseRoutes);
+
+// ==========================================
+// FINANCE ROUTES
+// ==========================================
+
+app.use("/api/finance", financeRoutes);
 
 // ==========================================
 // PROTECTED PROFILE API
