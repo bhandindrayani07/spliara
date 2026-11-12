@@ -25,8 +25,8 @@
             <p>Keep shared expenses simple and organised.</p>
         </section>
 
+        <!-- GROUPS -->
         <section class="groups-section">
-
             <div class="section-heading">
                 <div>
                     <h2>Your Groups</h2>
@@ -38,13 +38,9 @@
             <div id="groupFormContainer" class="form-container hidden">
                 <form id="groupForm">
                     <label for="groupName">Group name</label>
-                    <input
-                        type="text"
-                        id="groupName"
-                        placeholder="e.g. College Trip"
-                        maxlength="100"
-                        required
-                    >
+                    <input type="text" id="groupName"
+                        placeholder="e.g. College Trip" maxlength="100" required>
+
                     <div class="form-actions">
                         <button type="submit">Save Group</button>
                         <button type="button" id="cancelGroupBtn">Cancel</button>
@@ -55,9 +51,9 @@
             <div id="groupsList" class="groups-grid">
                 <p>Loading your groups...</p>
             </div>
-
         </section>
 
+        <!-- GROUP DETAILS -->
         <section id="groupDetails" class="group-details hidden">
 
             <button id="backToGroupsBtn" class="back-btn">
@@ -78,15 +74,13 @@
                 </div>
             </div>
 
+            <!-- EDIT GROUP -->
             <div id="editGroupContainer" class="form-container hidden">
                 <form id="editGroupForm">
                     <label for="editGroupName">Edit group name</label>
-                    <input
-                        type="text"
-                        id="editGroupName"
-                        maxlength="100"
-                        required
-                    >
+                    <input type="text" id="editGroupName"
+                        maxlength="100" required>
+
                     <div class="form-actions">
                         <button type="submit">Update Group</button>
                         <button type="button" id="cancelEditGroupBtn">Cancel</button>
@@ -94,13 +88,84 @@
                 </form>
             </div>
 
+            <!-- TOTAL EXPENSES -->
             <div class="total-card">
                 <p>Total Group Expenses</p>
                 <h2 id="totalExpenses">₹0.00</h2>
             </div>
 
+            <!-- MEMBER BALANCES -->
+            <section class="finance-section">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">GROUP FINANCES</p>
+                        <h2>Member Balances</h2>
+                        <p>See who owes money and who should receive it.</p>
+                    </div>
+
+                    <button type="button" id="refreshFinanceBtn">
+                        Refresh Balances
+                    </button>
+                </div>
+
+                <div id="balancesList" class="balances-grid">
+                    <p>Loading balances...</p>
+                </div>
+            </section>
+
+            <!-- SIMPLIFIED DEBTS -->
+            <section class="finance-section">
+                <div>
+                    <p class="eyebrow">SMART SETTLEMENTS</p>
+                    <h2>Simplified Debts</h2>
+                    <p class="finance-description">
+                        Suggested payments to simplify group debts.
+                    </p>
+                </div>
+
+                <div id="debtsList" class="debts-list">
+                    <p>Loading simplified debts...</p>
+                </div>
+            </section>
+
+            <!-- RECORD SETTLEMENT -->
+            <section class="finance-section">
+                <div>
+                    <p class="eyebrow">SETTLE UP</p>
+                    <h2>Record a Payment</h2>
+                    <p class="finance-description">
+                        Record a payment you have made to another group member.
+                    </p>
+                </div>
+
+                <div class="form-container settlement-form-container">
+                    <form id="settlementForm">
+                        <label for="settlementReceiver">Paid to</label>
+                        <select id="settlementReceiver" required>
+                            <option value="">Select a group member</option>
+                        </select>
+
+                        <label for="settlementAmount">Amount (₹)</label>
+                        <input
+                            type="number"
+                            id="settlementAmount"
+                            placeholder="e.g. 500"
+                            min="0.01"
+                            step="0.01"
+                            required
+                        >
+
+                        <div class="form-actions">
+                            <button type="submit">Record Payment</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ADD EXPENSE WITH SPLITS -->
             <div id="expenseFormContainer" class="form-container hidden">
                 <form id="expenseForm">
+
                     <label for="expenseDescription">Expense description</label>
                     <input
                         type="text"
@@ -119,21 +184,36 @@
                         required
                     >
 
+                    <label for="splitType">Split type</label>
+                    <select id="splitType" required>
+                        <option value="equal">Split equally</option>
+                        <option value="exact">Enter exact amounts</option>
+                        <option value="percentage">Split by percentage</option>
+                    </select>
+
+                    <div class="split-heading">
+                        <label>Choose members and their shares</label>
+                        <p>Select the members who should share this expense.</p>
+                    </div>
+
+                    <div id="splitMembersContainer">
+                        <p>Group members will appear here.</p>
+                    </div>
+
                     <div class="form-actions">
                         <button type="submit">Save Expense</button>
                         <button type="button" id="cancelExpenseBtn">Cancel</button>
                     </div>
+
                 </form>
             </div>
 
+            <!-- EDIT EXPENSE -->
             <div id="editExpenseContainer" class="form-container hidden">
                 <form id="editExpenseForm">
+
                     <label for="editExpenseDescription">Edit description</label>
-                    <input
-                        type="text"
-                        id="editExpenseDescription"
-                        required
-                    >
+                    <input type="text" id="editExpenseDescription" required>
 
                     <label for="editExpenseAmount">Edit amount (₹)</label>
                     <input
@@ -148,12 +228,18 @@
                         <button type="submit">Update Expense</button>
                         <button type="button" id="cancelEditExpenseBtn">Cancel</button>
                     </div>
+
                 </form>
             </div>
 
-            <div id="expensesList" class="expenses-list">
-                <p>Select a group to view expenses.</p>
-            </div>
+            <!-- EXPENSE HISTORY -->
+            <section class="finance-section">
+                <h2>Expense History</h2>
+
+                <div id="expensesList" class="expenses-list">
+                    <p>Select a group to view expenses.</p>
+                </div>
+            </section>
 
         </section>
 

@@ -25,7 +25,7 @@ body {
     min-height: 100vh;
 }
 
-button, input {
+button, input, select {
     font: inherit;
 }
 
@@ -42,6 +42,15 @@ button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--sage-dark);
+    outline-offset: 3px;
+}
+
+/* NAVBAR */
 
 .navbar {
     min-height: 75px;
@@ -81,6 +90,8 @@ button:disabled {
     color: white;
 }
 
+/* MAIN DASHBOARD */
+
 .dashboard-container {
     width: min(1100px, 88%);
     margin: 55px auto;
@@ -104,10 +115,13 @@ button:disabled {
 }
 
 .dashboard-heading > p:last-child,
-.section-heading p {
+.section-heading p,
+.finance-description {
     color: var(--muted);
     line-height: 1.6;
 }
+
+/* SECTION HEADINGS */
 
 .section-heading {
     display: flex;
@@ -117,13 +131,17 @@ button:disabled {
     margin-bottom: 24px;
 }
 
-.section-heading h2 {
+.section-heading h2,
+.finance-section h2 {
     font-size: 25px;
     margin-bottom: 7px;
 }
 
+/* PRIMARY BUTTONS */
+
 #addGroupBtn,
 #addExpenseBtn,
+#refreshFinanceBtn,
 .form-actions button[type="submit"] {
     background: var(--sage-dark);
     color: white;
@@ -131,9 +149,12 @@ button:disabled {
 
 #addGroupBtn:hover,
 #addExpenseBtn:hover,
+#refreshFinanceBtn:hover,
 .form-actions button[type="submit"]:hover {
     background: var(--walnut);
 }
+
+/* GROUP CARDS */
 
 .groups-grid {
     display: grid;
@@ -144,7 +165,9 @@ button:disabled {
 .group-card,
 .form-container,
 .total-card,
-.expense-card {
+.expense-card,
+.balance-card,
+.debt-card {
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: 16px;
@@ -181,40 +204,7 @@ button:disabled {
     font-weight: 700;
 }
 
-/* Group and expense action buttons */
-
-.item-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 16px;
-}
-
-.action-btn {
-    padding: 8px 13px;
-    font-size: 13px;
-    border-radius: 8px;
-}
-
-.edit-btn {
-    background: var(--sage-light);
-    color: var(--sage-dark);
-}
-
-.edit-btn:hover {
-    background: var(--sage);
-    color: white;
-}
-
-.delete-btn {
-    background: #F8E8E2;
-    color: #A64B35;
-}
-
-.delete-btn:hover {
-    background: #A64B35;
-    color: white;
-}
+/* FORMS */
 
 .form-container {
     padding: 24px;
@@ -232,7 +222,8 @@ button:disabled {
     font-size: 14px;
 }
 
-.form-container input {
+.form-container input,
+.form-container select {
     width: 100%;
     padding: 13px;
     border: 1px solid var(--border);
@@ -242,12 +233,14 @@ button:disabled {
     color: var(--walnut);
 }
 
-.form-container input:focus {
+.form-container input:focus,
+.form-container select:focus {
     border-color: var(--sage-dark);
 }
 
 .form-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-top: 8px;
 }
@@ -265,6 +258,8 @@ button:disabled {
     display: none !important;
 }
 
+/* GROUP DETAILS */
+
 .group-details {
     margin-top: 45px;
 }
@@ -279,6 +274,8 @@ button:disabled {
 .back-btn:hover {
     color: var(--walnut);
 }
+
+/* TOTAL EXPENSES */
 
 .total-card {
     padding: 25px;
@@ -297,6 +294,184 @@ button:disabled {
     font-size: 32px;
     color: var(--walnut);
 }
+
+/* FINANCE SECTIONS */
+
+.finance-section {
+    margin: 35px 0;
+}
+
+.finance-section > div:first-child {
+    margin-bottom: 18px;
+}
+
+/* MEMBER BALANCES */
+
+.balances-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+}
+
+.balance-card {
+    padding: 22px;
+    border-left: 4px solid var(--sage);
+}
+
+.balance-card h3 {
+    font-size: 17px;
+    margin-bottom: 12px;
+    overflow-wrap: anywhere;
+}
+
+.balance-status {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.balance-card strong {
+    font-size: 22px;
+}
+
+.balance-positive {
+    border-left-color: var(--sage-dark);
+}
+
+.balance-positive strong {
+    color: var(--sage-dark);
+}
+
+.balance-negative {
+    border-left-color: #C77B55;
+}
+
+.balance-negative strong {
+    color: #A64B35;
+}
+
+.balance-settled {
+    border-left-color: #B5B0A5;
+}
+
+.balance-settled strong {
+    color: var(--muted);
+}
+
+/* SIMPLIFIED DEBTS */
+
+.debts-list {
+    display: grid;
+    gap: 12px;
+}
+
+.transaction-count {
+    color: var(--sage-dark);
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.debt-card {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.debt-people {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 0;
+}
+
+.debt-people strong {
+    overflow-wrap: anywhere;
+}
+
+.debt-arrow {
+    color: var(--sage-dark);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.debt-amount {
+    color: var(--sage-dark);
+    font-size: 18px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* SETTLEMENT FORM */
+
+.settlement-form-container {
+    max-width: 600px;
+}
+
+/* EXPENSE SPLIT CONTROLS */
+
+.split-heading {
+    margin-top: 10px;
+}
+
+.split-heading label {
+    display: block;
+}
+
+.split-heading p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+#splitMembersContainer {
+    display: grid;
+    gap: 10px;
+}
+
+.split-member-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 13px 15px;
+    background: var(--ivory);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.split-member-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.split-member-label span {
+    overflow-wrap: anywhere;
+}
+
+.split-member-checkbox {
+    width: 17px !important;
+    height: 17px;
+    accent-color: var(--sage-dark);
+    flex-shrink: 0;
+}
+
+.split-share-input {
+    max-width: 150px;
+}
+
+.split-share-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* EXPENSE HISTORY */
 
 .expenses-list {
     display: grid;
@@ -339,6 +514,36 @@ button:disabled {
     align-items: center;
 }
 
+/* ACTION BUTTONS */
+
+.action-btn {
+    padding: 8px 13px;
+    font-size: 13px;
+    border-radius: 8px;
+}
+
+.edit-btn {
+    background: var(--sage-light);
+    color: var(--sage-dark);
+}
+
+.edit-btn:hover {
+    background: var(--sage);
+    color: white;
+}
+
+.delete-btn {
+    background: #F8E8E2;
+    color: #A64B35;
+}
+
+.delete-btn:hover {
+    background: #A64B35;
+    color: white;
+}
+
+/* STATUS MESSAGES */
+
 #dashboardMessage {
     margin-top: 20px;
     color: var(--sage-dark);
@@ -356,7 +561,9 @@ button:disabled {
     text-align: center;
 }
 
-@media (max-width: 600px) {
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 700px) {
     .navbar {
         padding: 15px 5%;
     }
@@ -380,6 +587,14 @@ button:disabled {
         width: 100%;
     }
 
+    .section-heading .form-actions {
+        width: 100%;
+    }
+
+    .section-heading .form-actions button {
+        flex: 1;
+    }
+
     .expense-card {
         align-items: flex-start;
         flex-direction: column;
@@ -395,5 +610,33 @@ button:disabled {
 
     .form-actions button {
         flex: 1;
+    }
+
+    .debt-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 420px) {
+    .logo {
+        font-size: 24px;
+    }
+
+    .user-section {
+        font-size: 12px;
+    }
+
+    .balance-card {
+        padding: 18px;
+    }
+
+    .split-member-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .split-share-input {
+        max-width: 100%;
     }
 }
