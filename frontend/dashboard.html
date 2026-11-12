@@ -4,249 +4,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spliara | Dashboard</title>
+    <title>Spliara | Overview</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="dashboard.css">
 </head>
+
 <body>
 
-    <header class="navbar">
-        <div class="logo">spliara<span>.</span></div>
-        <div class="user-section">
-            <span id="welcomeUser">Welcome!</span>
-            <button id="logoutBtn">Logout</button>
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-top">
+            <a href="dashboard.html" class="logo">spliara<span>.</span></a>
+            <button type="button" class="sidebar-close" id="sidebarCloseBtn" aria-label="Close menu">×</button>
         </div>
-    </header>
 
-    <main class="dashboard-container">
+        <div class="sidebar-label">WORKSPACE</div>
 
-        <section class="dashboard-heading">
-            <p class="eyebrow">YOUR EXPENSE SPACE</p>
-            <h1>Manage your groups.</h1>
-            <p>Keep shared expenses simple and organised.</p>
-        </section>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link active"><span>⌂</span> Overview</a>
+            <a href="groups.html" class="nav-link"><span>♧</span> My Groups</a>
+            <a href="expenses.html" class="nav-link"><span>▤</span> All Expenses</a>
+            <a href="balances.html" class="nav-link"><span>⇄</span> Balances</a>
+            <a href="settlements.html" class="nav-link"><span>↔</span> Settlements</a>
+            <a href="analytics.html" class="nav-link"><span>▥</span> Analytics</a>
+        </nav>
 
-        <!-- GROUPS -->
-        <section class="groups-section">
-            <div class="section-heading">
-                <div>
-                    <h2>Your Groups</h2>
-                    <p>All your shared expense groups in one place.</p>
-                </div>
-                <button id="addGroupBtn">+ Create Group</button>
+        <div class="sidebar-label preferences-label">PREFERENCES</div>
+
+        <nav class="sidebar-nav">
+            <a href="profile.html" class="nav-link"><span>♙</span> My Profile</a>
+            <a href="profile.html#accountSettings" class="nav-link"><span>⚙</span> Settings</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-note">
+                <span>✦</span>
+                <p>Share expenses.<br>Keep friendships simple.</p>
             </div>
 
-            <div id="groupFormContainer" class="form-container hidden">
-                <form id="groupForm">
-                    <label for="groupName">Group name</label>
-                    <input type="text" id="groupName"
-                        placeholder="e.g. College Trip" maxlength="100" required>
-
-                    <div class="form-actions">
-                        <button type="submit">Save Group</button>
-                        <button type="button" id="cancelGroupBtn">Cancel</button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="groupsList" class="groups-grid">
-                <p>Loading your groups...</p>
-            </div>
-        </section>
-
-        <!-- GROUP DETAILS -->
-        <section id="groupDetails" class="group-details hidden">
-
-            <button id="backToGroupsBtn" class="back-btn">
-                ← Back to groups
+            <button type="button" id="logoutBtn" class="sidebar-logout">
+                <span>↪</span> Logout
             </button>
+        </div>
 
-            <div class="section-heading">
-                <div>
-                    <p class="eyebrow">GROUP DETAILS</p>
-                    <h2 id="selectedGroupName">Group Name</h2>
-                    <p>All expenses for this group.</p>
-                </div>
+    </aside>
 
-                <div class="form-actions">
-                    <button id="editGroupBtn" type="button">Edit Group</button>
-                    <button id="deleteGroupBtn" type="button">Delete Group</button>
-                    <button id="addExpenseBtn" type="button">+ Add Expense</button>
-                </div>
+    <!-- MOBILE OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <button type="button" class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+
+            <div class="breadcrumb">
+                Workspace <span>/</span> Overview
             </div>
 
-            <!-- EDIT GROUP -->
-            <div id="editGroupContainer" class="form-container hidden">
-                <form id="editGroupForm">
-                    <label for="editGroupName">Edit group name</label>
-                    <input type="text" id="editGroupName"
-                        maxlength="100" required>
-
-                    <div class="form-actions">
-                        <button type="submit">Update Group</button>
-                        <button type="button" id="cancelEditGroupBtn">Cancel</button>
-                    </div>
-                </form>
+            <div class="topbar-right">
+               
+                <span id="welcomeUser">Welcome!</span>
             </div>
+        </header>
 
-            <!-- TOTAL EXPENSES -->
-            <div class="total-card">
-                <p>Total Group Expenses</p>
-                <h2 id="totalExpenses">₹0.00</h2>
-            </div>
+        <div class="dashboard-content">
 
-            <!-- MEMBER BALANCES -->
-            <section class="finance-section">
-                <div class="section-heading">
+            <!-- WELCOME -->
+            <section class="welcome-section">
+
+                <div class="welcome-heading">
                     <div>
-                        <p class="eyebrow">GROUP FINANCES</p>
-                        <h2>Member Balances</h2>
-                        <p>See who owes money and who should receive it.</p>
+                        <p class="eyebrow">YOUR EXPENSE SPACE</p>
+                        <h1>Welcome back!</h1>
+                        <p class="welcome-description">
+                            Your shared expenses, organised in one place.
+                        </p>
                     </div>
 
-                    <button type="button" id="refreshFinanceBtn">
-                        Refresh Balances
-                    </button>
+                  
                 </div>
 
-                <div id="balancesList" class="balances-grid">
-                    <p>Loading balances...</p>
+                <!-- SUMMARY -->
+                <div class="summary-grid">
+
+                    <article class="summary-card">
+                        <div class="summary-icon sage-icon">₹</div>
+                        <p>Total Expenses</p>
+                        <h2 id="dashboardTotalExpenses">₹0.00</h2>
+                        <span>Across all your groups</span>
+                    </article>
+
+                    <article class="summary-card">
+                        <div class="summary-icon walnut-icon">♧</div>
+                        <p>Active Groups</p>
+                        <h2 id="dashboardGroupCount">0</h2>
+                        <span>Your shared spaces</span>
+                    </article>
+
                 </div>
+
             </section>
 
-            <!-- SIMPLIFIED DEBTS -->
-            <section class="finance-section">
-                <div>
-                    <p class="eyebrow">SMART SETTLEMENTS</p>
-                    <h2>Simplified Debts</h2>
-                    <p class="finance-description">
-                        Suggested payments to simplify group debts.
+            <!-- MONTHLY SPENDING -->
+            <section class="dashboard-panel spending-panel">
+
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">YOUR FINANCES</p>
+                        <h2>Monthly Spending Overview</h2>
+                        <p>Track your group's expenses over the last six months.</p>
+                    </div>
+
+                    <span class="panel-period">Last 6 months</span>
+                </div>
+
+                <div class="chart-container">
+                    <div id="monthlySpendingChart" class="spending-chart">
+                        <p class="loading-message">Preparing your spending overview...</p>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- SMART INSIGHTS -->
+            <section class="dashboard-panel insights-panel">
+
+                <div class="insight-icon">✦</div>
+
+                <div class="insight-content">
+                    <p class="eyebrow">SMART INSIGHTS</p>
+                    <h2>Your Spending Insights</h2>
+
+                    <p id="spendingInsightText">
+                        Your personalised spending insights will appear here
+                        once we analyse your expense history.
                     </p>
                 </div>
 
-                <div id="debtsList" class="debts-list">
-                    <p>Loading simplified debts...</p>
-                </div>
             </section>
 
-            <!-- RECORD SETTLEMENT -->
-            <section class="finance-section">
-                <div>
-                    <p class="eyebrow">SETTLE UP</p>
-                    <h2>Record a Payment</h2>
-                    <p class="finance-description">
-                        Record a payment you have made to another group member.
-                    </p>
-                </div>
+            <p id="dashboardMessage" role="status" aria-live="polite"></p>
 
-                <div class="form-container settlement-form-container">
-                    <form id="settlementForm">
-                        <label for="settlementReceiver">Paid to</label>
-                        <select id="settlementReceiver" required>
-                            <option value="">Select a group member</option>
-                        </select>
-
-                        <label for="settlementAmount">Amount (₹)</label>
-                        <input
-                            type="number"
-                            id="settlementAmount"
-                            placeholder="e.g. 500"
-                            min="0.01"
-                            step="0.01"
-                            required
-                        >
-
-                        <div class="form-actions">
-                            <button type="submit">Record Payment</button>
-                        </div>
-                    </form>
-                </div>
-            </section>
-
-            <!-- ADD EXPENSE WITH SPLITS -->
-            <div id="expenseFormContainer" class="form-container hidden">
-                <form id="expenseForm">
-
-                    <label for="expenseDescription">Expense description</label>
-                    <input
-                        type="text"
-                        id="expenseDescription"
-                        placeholder="e.g. Hotel booking"
-                        required
-                    >
-
-                    <label for="expenseAmount">Amount (₹)</label>
-                    <input
-                        type="number"
-                        id="expenseAmount"
-                        placeholder="e.g. 2500"
-                        min="0.01"
-                        step="0.01"
-                        required
-                    >
-
-                    <label for="splitType">Split type</label>
-                    <select id="splitType" required>
-                        <option value="equal">Split equally</option>
-                        <option value="exact">Enter exact amounts</option>
-                        <option value="percentage">Split by percentage</option>
-                    </select>
-
-                    <div class="split-heading">
-                        <label>Choose members and their shares</label>
-                        <p>Select the members who should share this expense.</p>
-                    </div>
-
-                    <div id="splitMembersContainer">
-                        <p>Group members will appear here.</p>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit">Save Expense</button>
-                        <button type="button" id="cancelExpenseBtn">Cancel</button>
-                    </div>
-
-                </form>
-            </div>
-
-            <!-- EDIT EXPENSE -->
-            <div id="editExpenseContainer" class="form-container hidden">
-                <form id="editExpenseForm">
-
-                    <label for="editExpenseDescription">Edit description</label>
-                    <input type="text" id="editExpenseDescription" required>
-
-                    <label for="editExpenseAmount">Edit amount (₹)</label>
-                    <input
-                        type="number"
-                        id="editExpenseAmount"
-                        min="0.01"
-                        step="0.01"
-                        required
-                    >
-
-                    <div class="form-actions">
-                        <button type="submit">Update Expense</button>
-                        <button type="button" id="cancelEditExpenseBtn">Cancel</button>
-                    </div>
-
-                </form>
-            </div>
-
-            <!-- EXPENSE HISTORY -->
-            <section class="finance-section">
-                <h2>Expense History</h2>
-
-                <div id="expensesList" class="expenses-list">
-                    <p>Select a group to view expenses.</p>
-                </div>
-            </section>
-
-        </section>
-
-        <p id="dashboardMessage" role="status"></p>
+        </div>
 
     </main>
 
-    <script src="dashboard.js"></script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="dashboard.js"></script>
+
 </body>
 </html>

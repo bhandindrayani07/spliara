@@ -1,0 +1,495 @@
+
+/* ==============================
+   SPLIARA PROFILE PAGE
+================================= */
+
+:root {
+    --background: #f7f8f5;
+    --surface: #ffffff;
+    --primary: #52796f;
+    --primary-dark: #3d6259;
+    --text: #26352f;
+    --muted: #7b8780;
+    --border: #e7ebe6;
+    --soft-green: #edf4ef;
+    --shadow: 0 8px 30px rgba(38, 53, 47, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* NAVBAR */
+
+.navbar {
+    min-height: 76px;
+    padding: 0 8%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: var(--text);
+    font-size: 27px;
+    font-weight: 750;
+    letter-spacing: -1.5px;
+    text-decoration: none;
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.back-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.back-link:hover {
+    color: var(--primary);
+}
+
+.logout-btn {
+    padding: 10px 19px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: white;
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: var(--soft-green);
+}
+
+/* MAIN CONTAINER */
+
+.profile-container {
+    width: min(100% - 40px, 920px);
+    margin: 55px auto;
+}
+
+/* PAGE HEADING */
+
+.page-heading {
+    margin-bottom: 30px;
+}
+
+.eyebrow {
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 1.7px;
+    margin-bottom: 9px;
+}
+
+.page-heading h1 {
+    font-size: clamp(30px, 5vw, 39px);
+    letter-spacing: -1.4px;
+    line-height: 1.2;
+    margin-bottom: 10px;
+}
+
+.page-heading > p:last-child {
+    color: var(--muted);
+    font-size: 15px;
+}
+
+/* COMMON CARD */
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    padding: 30px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow);
+}
+
+/* PROFILE OVERVIEW */
+
+.profile-overview {
+    display: flex;
+    align-items: center;
+    gap: 27px;
+    padding: 32px;
+}
+
+.avatar-wrapper {
+    width: 112px;
+    height: 112px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--soft-green);
+}
+
+.upload-avatar {
+    position: absolute;
+    right: 0;
+    bottom: 3px;
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    color: white;
+    border: 3px solid white;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.profile-identity h2 {
+    font-size: 23px;
+    margin-bottom: 3px;
+}
+
+.profile-identity > p:not(.eyebrow) {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.account-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 12px;
+    background: var(--soft-green);
+    color: var(--primary-dark);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* SECTION HEADINGS */
+
+.section-heading {
+    margin-bottom: 26px;
+}
+
+.section-heading h2 {
+    font-size: 21px;
+    letter-spacing: -0.5px;
+    margin-bottom: 5px;
+}
+
+.section-heading p:not(.eyebrow) {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* FORMS */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.form-group input {
+    width: 100%;
+    min-height: 47px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #fcfdfb;
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.form-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(82, 121, 111, 0.10);
+}
+
+.form-group input::placeholder {
+    color: #a6aea8;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* BUTTONS */
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 27px;
+}
+
+.primary-btn,
+.secondary-btn {
+    padding: 11px 19px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+    border: 1px solid var(--primary);
+}
+
+.primary-btn:hover {
+    background: var(--primary-dark);
+}
+
+.secondary-btn {
+    background: white;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.secondary-btn:hover {
+    background: var(--soft-green);
+}
+
+.text-btn {
+    border: none;
+    background: none;
+    color: #a45d5d;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 12px;
+}
+
+/* PROFILE PICTURE */
+
+.picture-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.picture-preview img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--soft-green);
+}
+
+.picture-info h3 {
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.picture-info p {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 13px;
+}
+
+.picture-info .secondary-btn {
+    padding: 9px 14px;
+}
+
+/* ACCOUNT INFORMATION */
+
+.account-details {
+    border-top: 1px solid var(--border);
+}
+
+.detail-row {
+    min-height: 57px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row span {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.detail-row strong {
+    font-size: 13px;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+.status-active {
+    color: var(--primary);
+}
+
+/* MESSAGE */
+
+.profile-message {
+    min-height: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--primary-dark);
+    margin: 15px 0;
+}
+
+/* FOOTER */
+
+.profile-footer {
+    padding: 25px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 650px) {
+
+    .navbar {
+        padding: 0 20px;
+        min-height: 68px;
+    }
+
+    .logo {
+        font-size: 24px;
+    }
+
+    .nav-actions {
+        gap: 12px;
+    }
+
+    .back-link {
+        font-size: 12px;
+    }
+
+    .logout-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .profile-container {
+        width: min(100% - 28px, 920px);
+        margin: 35px auto;
+    }
+
+    .card {
+        padding: 22px 18px;
+        border-radius: 13px;
+    }
+
+    .profile-overview {
+        gap: 17px;
+        padding: 23px 18px;
+    }
+
+    .avatar-wrapper {
+        width: 82px;
+        height: 82px;
+    }
+
+    .profile-identity h2 {
+        font-size: 18px;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-identity > p:not(.eyebrow) {
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .full-width {
+        grid-column: auto;
+    }
+
+    .picture-actions {
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .picture-preview img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .form-actions {
+        flex-wrap: wrap;
+    }
+
+    .detail-row {
+        align-items: flex-start;
+        padding: 15px 0;
+    }
+
+}
+
+@media (max-width: 380px) {
+
+    .navbar {
+        padding: 0 12px;
+    }
+
+    .nav-actions {
+        gap: 8px;
+    }
+
+    .back-link {
+        font-size: 11px;
+    }
+
+    .logout-btn {
+        padding: 7px 9px;
+    }
+
+    .profile-overview {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+}

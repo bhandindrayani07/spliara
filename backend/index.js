@@ -8,7 +8,6 @@ const authRoutes = require("./routes/auth");
 const groupRoutes = require("./routes/groups");
 const expenseRoutes = require("./routes/expenses");
 const financeRoutes = require("./routes/finance");
-const authMiddleware = require("./middleware/authMiddleware");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,9 +17,17 @@ const PORT = process.env.PORT || 3000;
 // ==========================================
 
 app.use(express.json());
+// TEMPORARY: Log incoming API requests
+app.use((req, res, next) => {
+    console.log("INCOMING REQUEST:", req.method, req.originalUrl);
+    next();
+});
 
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));
+
+// Serve uploaded profile pictures
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ==========================================
 // AUTHENTICATION ROUTES
@@ -45,42 +52,6 @@ app.use("/api/expenses", expenseRoutes);
 // ==========================================
 
 app.use("/api/finance", financeRoutes);
-
-// ==========================================
-// PROTECTED PROFILE API
-// ==========================================
-
-app.get("/api/auth/profile", authMiddleware, async (req, res) => {
-    try {
-        const result = await pool.query(
-            `SELECT id, name, email, created_at
-             FROM users
-             WHERE id = $1`,
-            [req.user.userId]
-        );
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({
-                status: "error",
-                message: "User not found."
-            });
-        }
-
-        return res.status(200).json({
-            status: "success",
-            message: "Profile accessed successfully!",
-            user: result.rows[0]
-        });
-
-    } catch (error) {
-        console.error("Profile error:", error.message);
-
-        return res.status(500).json({
-            status: "error",
-            message: "Unable to retrieve profile."
-        });
-    }
-});
 
 // ==========================================
 // HEALTH CHECK
@@ -112,6 +83,16 @@ app.get("/health", async (req, res) => {
 // START SERVER
 // ==========================================
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Spliara backend running at http://localhost:${PORT}`);
 });
+
+// Detect if server closes
+server.on("close", () => {
+    console.log("SPLiARA SERVER CLOSED");
+});
+
+// Temporary diagnostic: confirm process remains active
+setInterval(() => {
+    console.log("Spliara server is still alive");
+}, 10000);

@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accept Invitation | Spliara</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: #f7f6f0;
+            color: #34372f;
+            font-family: Arial, sans-serif;
+        }
+
+        .invitation-card {
+            width: 100%;
+            max-width: 460px;
+            padding: 48px 36px;
+            text-align: center;
+            background: #fffefa;
+            border: 1px solid #e8e7dc;
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(52, 55, 47, 0.07);
+        }
+
+        .brand {
+            margin-bottom: 32px;
+            color: #667b59;
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .icon {
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eaf0e4;
+            border-radius: 50%;
+            color: #667b59;
+            font-size: 30px;
+        }
+
+        h1 {
+            margin-bottom: 12px;
+            font-size: 27px;
+        }
+
+        .description {
+            color: #77796f;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        #statusMessage {
+            min-height: 25px;
+            margin-top: 24px;
+            color: #667b59;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .accept-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #718665;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .accept-btn:hover {
+            background: #5d7252;
+        }
+
+        .accept-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 22px;
+            color: #718665;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .invitation-card {
+                padding: 38px 24px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="invitation-card">
+
+        <div class="brand">spliara.</div>
+
+        <div class="icon">✦</div>
+
+        <h1>You're invited!</h1>
+
+        <p class="description">
+            Someone has invited you to join their group on Spliara.
+            Accept the invitation to start sharing and managing expenses together.
+        </p>
+
+        <p id="statusMessage">
+            Checking your invitation...
+        </p>
+
+        <button id="acceptBtn" class="accept-btn" disabled>
+            Accept Invitation
+        </button>
+
+        <a href="dashboard.html" class="back-link">
+            Back to Spliara
+        </a>
+
+    </main>
+
+    <script>
+        const token = new URLSearchParams(window.location.search)
+            .get("token");
+
+        const authToken = sessionStorage.getItem("spliaraToken");
+
+        const statusMessage = document.getElementById("statusMessage");
+        const acceptBtn = document.getElementById("acceptBtn");
+
+        // Check whether the invitation token exists.
+        if (!token) {
+            statusMessage.textContent =
+                "This invitation link is invalid or incomplete.";
+
+            acceptBtn.style.display = "none";
+
+        } else if (!authToken) {
+
+            // Save the invitation token and redirect to login.
+            sessionStorage.setItem("pendingInvitationToken", token);
+
+            window.location.href =
+                `index.html?inviteToken=${encodeURIComponent(token)}`;
+
+        } else {
+
+            statusMessage.textContent =
+                "Your invitation is ready. Accept it to join the group.";
+
+            acceptBtn.disabled = false;
+        }
+
+        // Accept the group invitation.
+        acceptBtn.addEventListener("click", async () => {
+
+            if (!token || !authToken) {
+                return;
+            }
+
+            acceptBtn.disabled = true;
+            acceptBtn.textContent = "Accepting...";
+            statusMessage.textContent =
+                "Please wait while we add you to the group.";
+
+            try {
+                const response = await fetch(
+                    "/api/groups/invitations/accept-link",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify({ token })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || "Unable to accept this invitation."
+                    );
+                }
+
+                sessionStorage.removeItem("pendingInvitationToken");
+
+                statusMessage.textContent =
+                    "Invitation accepted! Opening your group...";
+
+                if (data.group && data.group.id) {
+                    window.location.href =
+                        `group-details.html?groupId=${data.group.id}`;
+                } else {
+                    window.location.href = "groups.html";
+                }
+
+            } catch (error) {
+
+                statusMessage.textContent =
+                    error.message || "Something went wrong. Please try again.";
+
+                acceptBtn.disabled = false;
+                acceptBtn.textContent = "Try Again";
+            }
+        });
+    </script>
+
+</body>
+</html>

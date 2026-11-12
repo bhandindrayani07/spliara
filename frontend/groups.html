@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spliara | My Groups</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="groups.css">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-top">
+            <a href="dashboard.html" class="logo">spliara<span>.</span></a>
+            <button type="button" class="sidebar-close" id="sidebarCloseBtn" aria-label="Close menu">×</button>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link"><span>⌂</span> Overview</a>
+            <a href="groups.html" class="nav-link active"><span>♧</span> My Groups</a>
+            <a href="expenses.html" class="nav-link"><span>▤</span> All Expenses</a>
+            <a href="balances.html" class="nav-link"><span>⇄</span> Balances</a>
+            <a href="settlements.html" class="nav-link"><span>↔</span> Settlements</a>
+            <a href="analytics.html" class="nav-link"><span>▥</span> Analytics</a>
+        </nav>
+
+        <div class="sidebar-label preferences-label">PREFERENCES</div>
+
+        <nav class="sidebar-nav">
+            <a href="profile.html" class="nav-link"><span>♙</span> My Profile</a>
+            <a href="profile.html#accountSettings" class="nav-link"><span>⚙</span> Settings</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-note">
+                <span>✦</span>
+                <p>Share expenses.<br>Keep friendships simple.</p>
+            </div>
+
+            <button type="button" id="logoutBtn" class="sidebar-logout">
+                <span>↪</span> Logout
+            </button>
+        </div>
+
+    </aside>
+
+    <!-- MOBILE OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <button
+                type="button"
+                class="menu-toggle"
+                id="menuToggle"
+                aria-label="Open menu"
+            >☰</button>
+
+            <div class="breadcrumb">
+                Workspace <span>/</span> My Groups
+            </div>
+
+            <div class="topbar-right">
+                <span id="welcomeUser">Welcome!</span>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+
+            <!-- PAGE HEADING -->
+            <section class="overview-section">
+
+                <div class="welcome-heading">
+                    <div>
+                        <p class="eyebrow">YOUR COMMUNITIES</p>
+                        <h1>My Groups</h1>
+
+                        <p class="welcome-description">
+                            Keep shared expenses organised with friends, family and roommates.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- TOTAL GROUPS -->
+                <div class="group-count-bar">
+
+                    <div class="group-count-info">
+                        <div class="group-count-icon">♧</div>
+
+                        <div>
+                            <p>Total Groups</p>
+                            <span>Your shared spaces in one place</span>
+                        </div>
+                    </div>
+
+                    <h2 id="totalGroupsCount">0</h2>
+
+                </div>
+
+            </section>
+
+            <!-- CREATE GROUP FORM -->
+            <section id="groupFormContainer" class="form-container hidden">
+
+                <h2>Create a New Group</h2>
+                <p>Add a group to start organising shared expenses.</p>
+
+                <form id="groupForm">
+
+                    <label for="groupName">Group Name</label>
+
+                    <input
+                        type="text"
+                        id="groupName"
+                        placeholder="e.g. College Trip"
+                        maxlength="100"
+                        required
+                    >
+
+                    <div class="form-actions">
+                        <button type="submit" class="primary-btn">
+                            Create Group
+                        </button>
+
+                        <button
+                            type="button"
+                            id="cancelGroupBtn"
+                            class="secondary-btn"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+
+                </form>
+
+            </section>
+
+            <!-- ALL GROUPS -->
+            <section class="content-section groups-section">
+
+                <div class="section-heading groups-page-heading">
+
+                    <div>
+                        <p class="eyebrow">ALL YOUR COMMUNITIES</p>
+                        <h2>All Groups</h2>
+                        <p>Explore and manage your shared spaces.</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="addGroupBtn"
+                        class="primary-btn"
+                    >
+                        + Create Group
+                    </button>
+
+                </div>
+
+                <div id="groupsList" class="groups-grid">
+                    <p class="loading-message">Loading your groups...</p>
+                </div>
+
+            </section>
+
+            <!-- EDIT GROUP FORM -->
+            <section id="editGroupContainer" class="form-container hidden">
+
+                <h2>Edit Group</h2>
+                <p>Update the name of your group.</p>
+
+                <form id="editGroupForm">
+
+                    <label for="editGroupName">Group Name</label>
+
+                    <input
+                        type="text"
+                        id="editGroupName"
+                        maxlength="100"
+                        required
+                    >
+
+                    <div class="form-actions">
+
+                        <button type="submit" class="primary-btn">
+                            Update Group
+                        </button>
+
+                        <button
+                            type="button"
+                            id="cancelEditGroupBtn"
+                            class="secondary-btn"
+                        >
+                            Cancel
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+            <p id="dashboardMessage" role="status" aria-live="polite"></p>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="groups.js"></script>
+
+</body>
+</html>

@@ -20,7 +20,29 @@ const switchBtn = document.getElementById("switchBtn");
 
 let currentMode = "login";
 
-// Switch between Login and Sign Up
+// ==========================================
+// INVITATION LINK HANDLING
+// ==========================================
+
+// Preserve an invitation token when a user opens
+// the login or signup page through an invitation.
+
+const urlParams = new URLSearchParams(window.location.search);
+
+const invitationToken =
+    urlParams.get("inviteToken") || urlParams.get("token");
+
+if (invitationToken) {
+    sessionStorage.setItem("pendingInvitationToken", invitationToken);
+}
+
+const pendingInvitationToken =
+    sessionStorage.getItem("pendingInvitationToken");
+
+// ==========================================
+// LOGIN AND SIGNUP MODE
+// ==========================================
+
 function setMode(mode, updateUrl = true) {
     currentMode = mode;
 
@@ -43,6 +65,7 @@ function setMode(mode, updateUrl = true) {
 
         switchText.firstChild.textContent =
             "Already have an account? ";
+
         switchBtn.textContent = "Login";
 
     } else {
@@ -61,25 +84,32 @@ function setMode(mode, updateUrl = true) {
 
         switchText.firstChild.textContent =
             "Don't have an account? ";
+
         switchBtn.textContent = "Sign up";
     }
 
-    // Update the URL
+    // Update URL without removing invitation information.
     if (updateUrl && window.location.hash !== `#${mode}`) {
         window.location.hash = mode;
     }
 }
 
-// Login and Signup tab events
+// ==========================================
+// TAB EVENTS
+// ==========================================
+
 loginTab.addEventListener("click", () => setMode("login"));
+
 signupTab.addEventListener("click", () => setMode("signup"));
 
-// Switch between Login and Signup
 switchBtn.addEventListener("click", () => {
     setMode(currentMode === "login" ? "signup" : "login");
 });
 
-// Handle browser back and forward buttons
+// ==========================================
+// BROWSER BACK AND FORWARD
+// ==========================================
+
 window.addEventListener("hashchange", () => {
     const mode = window.location.hash === "#signup"
         ? "signup"
@@ -90,25 +120,33 @@ window.addEventListener("hashchange", () => {
     }
 });
 
-// Set the initial route
+// ==========================================
+// INITIAL PAGE MODE
+// ==========================================
+
 const initialMode = window.location.hash === "#signup"
     ? "signup"
     : "login";
 
 setMode(initialMode);
 
-// Connect authentication form to backend API
+// ==========================================
+// AUTHENTICATION FORM
+// ==========================================
+
 authForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const email = emailInput.value.trim();
     const password = passwordInput.value;
 
-    const endpoint = currentMode === "signup"
+    const selectedMode = currentMode;
+
+    const endpoint = selectedMode === "signup"
         ? "/api/auth/register"
         : "/api/auth/login";
 
-    const requestData = currentMode === "signup"
+    const requestData = selectedMode === "signup"
         ? {
             name: nameInput.value.trim(),
             email,
@@ -138,15 +176,38 @@ authForm.addEventListener("submit", async (event) => {
             throw new Error(data.message || "Something went wrong.");
         }
 
-        if (currentMode === "signup") {
+        // ======================================
+        // SUCCESSFUL SIGNUP
+        // ======================================
+
+        if (selectedMode === "signup") {
             message.textContent =
-                "Account created successfully! You can now log in.";
+                pendingInvitationToken
+                    ? "Account created successfully! Log in using the invited email to accept your group invitation."
+                    : "Account created successfully! You can now log in.";
+
+            message.style.color = "#23834c";
+
+            // Switch to login without losing the invitation.
+            setMode("login");
+
+            message.textContent =
+                pendingInvitationToken
+                    ? "Account created! Now log in using the invited email to accept your invitation."
+                    : "Account created successfully! You can now log in.";
 
             message.style.color = "#23834c";
 
         } else {
+
+            // ==================================
+            // SUCCESSFUL LOGIN
+            // ==================================
+
             if (!data.token) {
-                throw new Error("Login succeeded but no token was received.");
+                throw new Error(
+                    "Login succeeded but no token was received."
+                );
             }
 
             sessionStorage.setItem("spliaraToken", data.token);
@@ -154,8 +215,18 @@ authForm.addEventListener("submit", async (event) => {
             message.textContent = "Login successful!";
             message.style.color = "#23834c";
 
-            // Open dashboard after successful login
-            window.location.href = "dashboard.html";
+            // If the user came through an invitation,
+            // open the invitation acceptance page.
+            const savedInvitationToken =
+                sessionStorage.getItem("pendingInvitationToken");
+
+            if (savedInvitationToken) {
+                window.location.href =
+                    `accept-invitation.html?token=${encodeURIComponent(savedInvitationToken)}`;
+            } else {
+                window.location.href = "dashboard.html";
+            }
+
             return;
         }
 
@@ -167,6 +238,7 @@ authForm.addEventListener("submit", async (event) => {
 
     } finally {
         submitBtn.disabled = false;
+
         submitBtn.textContent = currentMode === "signup"
             ? "Create Account"
             : "Login to Spliara";

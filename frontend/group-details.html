@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Spliara | Group Workspace</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="group-details.css">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-top">
+            <a href="dashboard.html" class="logo">spliara<span>.</span></a>
+            <button type="button" class="sidebar-close" id="sidebarCloseBtn">×</button>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link"><span>⌂</span> Overview</a>
+            <a href="groups.html" class="nav-link active"><span>♧</span> My Groups</a>
+            <a href="expenses.html" class="nav-link"><span>▤</span> All Expenses</a>
+            <a href="balances.html" class="nav-link"><span>⇄</span> Balances</a>
+            <a href="settlements.html" class="nav-link"><span>↔</span> Settlements</a>
+            <a href="analytics.html" class="nav-link"><span>▥</span> Analytics</a>
+        </nav>
+
+        <div class="sidebar-label preferences-label">PREFERENCES</div>
+
+        <nav class="sidebar-nav">
+            <a href="profile.html" class="nav-link"><span>♙</span> My Profile</a>
+            <a href="profile.html#accountSettings" class="nav-link"><span>⚙</span> Settings</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-note">
+                <span>✦</span>
+                <p>Share expenses.<br>Keep friendships simple.</p>
+            </div>
+
+            <button type="button" id="logoutBtn" class="sidebar-logout">
+                <span>↪</span> Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <button type="button" class="menu-toggle" id="menuToggle">☰</button>
+
+            <div class="breadcrumb">
+                Workspace <span>/</span>
+                <a href="groups.html">My Groups</a>
+                <span>/</span>
+                Group Workspace
+            </div>
+
+            <div class="topbar-right">
+                <span id="welcomeUser">Welcome!</span>
+            </div>
+
+        </header>
+
+        <div class="dashboard-content group-workspace">
+
+            <!-- BACK BUTTON -->
+            <a href="groups.html" class="back-to-groups">
+                ← Back to My Groups
+            </a>
+
+            <!-- GROUP HEADER -->
+            <section class="group-workspace-header">
+
+                <div>
+                    <p class="eyebrow">YOUR SHARED SPACE</p>
+
+                    <h1 id="groupName">Loading group...</h1>
+
+                    <p class="welcome-description" id="groupDescription">
+                        Manage expenses and keep track of everything together.
+                    </p>
+                </div>
+
+                <button type="button" class="primary-btn" id="addExpenseBtn">
+                    + Add Expense
+                </button>
+
+            </section>
+
+            <!-- SUMMARY CARDS -->
+            <section class="group-summary-grid">
+
+                <article class="group-summary-card">
+                    <p>Total Group Expenses</p>
+                    <h2 id="totalExpenses">₹0</h2>
+                    <span>All recorded expenses</span>
+                </article>
+
+                <article class="group-summary-card">
+                    <p>Total Transactions</p>
+                    <h2 id="totalTransactions">0</h2>
+                    <span>Recorded expenses</span>
+                </article>
+
+            </section>
+
+            <!-- MAIN GRID -->
+            <div class="group-workspace-grid">
+
+                <!-- EXPENSE HISTORY -->
+                <section class="workspace-panel expense-history-panel">
+
+                    <div class="workspace-panel-heading">
+                        <div>
+                            <p class="eyebrow">TRANSACTION RECORD</p>
+                            <h2>Expense History</h2>
+                        </div>
+                    </div>
+
+                    <div id="expenseHistory" class="expense-history">
+                        <p class="loading-message">Loading expenses...</p>
+                    </div>
+
+                </section>
+
+                <!-- GROUP MEMBERS AND INVITATIONS -->
+                <section class="workspace-panel members-panel">
+
+                    <div class="workspace-panel-heading">
+                        <div>
+                            <p class="eyebrow">YOUR PEOPLE</p>
+                            <h2>Group Members</h2>
+                        </div>
+
+                        <button type="button" class="secondary-btn" id="addMemberBtn">
+                            + Add Member
+                        </button>
+                    </div>
+
+                    <div id="groupMembers" class="group-members-list">
+                        <p class="loading-message">Loading members...</p>
+                    </div>
+
+                    <!-- PENDING INVITATIONS -->
+                    <div class="pending-invitations-section">
+
+                        <div class="workspace-panel-heading invitation-heading">
+                            <div>
+                                <p class="eyebrow">GROUP INVITES</p>
+                                <h3>Pending Invitations</h3>
+                            </div>
+                        </div>
+
+                        <div id="pendingInvitations">
+                            <p class="loading-message">
+                                Loading invitations...
+                            </p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- INDIVIDUAL BALANCES -->
+                <section class="workspace-panel">
+
+                    <div class="workspace-panel-heading">
+                        <div>
+                            <p class="eyebrow">WHO OWES WHOM</p>
+                            <h2>Individual Balances</h2>
+                        </div>
+                    </div>
+
+                    <div id="groupBalances">
+                        <p class="loading-message">Loading balances...</p>
+                    </div>
+
+                </section>
+
+                <!-- SETTLEMENTS -->
+                <section class="workspace-panel">
+
+                    <div class="workspace-panel-heading">
+                        <div>
+                            <p class="eyebrow">CLEAR YOUR DUES</p>
+                            <h2>Settlements</h2>
+                        </div>
+                    </div>
+
+                    <div id="groupSettlements">
+                        <p class="loading-message">Loading settlements...</p>
+                    </div>
+
+                </section>
+
+            </div>
+
+            <!-- STATUS MESSAGE -->
+            <p id="groupMessage" role="status" aria-live="polite"></p>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- ====================================== -->
+<!-- ADD EXPENSE MODAL -->
+<!-- ====================================== -->
+
+<div class="modal-overlay hidden" id="expenseModal">
+
+    <div class="workspace-modal">
+
+        <div class="modal-heading">
+            <div>
+                <p class="eyebrow">NEW TRANSACTION</p>
+                <h2>Add Expense</h2>
+            </div>
+
+            <button type="button" class="modal-close" data-close-modal="expenseModal">
+                ×
+            </button>
+        </div>
+
+        <form id="expenseForm">
+
+            <label for="expenseDescription">Expense Description</label>
+
+            <input
+                type="text"
+                id="expenseDescription"
+                placeholder="e.g. Dinner, Travel, Shopping"
+                maxlength="150"
+                required
+            >
+
+            <label for="expenseAmount">Amount (₹)</label>
+
+            <input
+                type="number"
+                id="expenseAmount"
+                placeholder="Enter amount"
+                min="0.01"
+                step="0.01"
+                required
+            >
+
+            <div class="modal-actions">
+
+                <button type="submit" class="primary-btn">
+                    Save Expense
+                </button>
+
+                <button type="button" class="secondary-btn" data-close-modal="expenseModal">
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ====================================== -->
+<!-- ADD MEMBER / INVITATION MODAL -->
+<!-- ====================================== -->
+
+<div class="modal-overlay hidden" id="memberModal">
+
+    <div class="workspace-modal">
+
+        <div class="modal-heading">
+
+            <div>
+                <p class="eyebrow">INVITE TO YOUR GROUP</p>
+                <h2>Add a Member</h2>
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                data-close-modal="memberModal"
+                aria-label="Close invitation modal"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="memberForm">
+
+            <label for="memberEmail">
+                Member's Email Address
+            </label>
+
+            <input
+                type="email"
+                id="memberEmail"
+                placeholder="Enter their email address"
+                maxlength="255"
+                required
+            >
+
+            <div class="invitation-note">
+                <span>✦</span>
+
+                <p>
+                    <strong>How invitations work</strong><br>
+                    An invitation will be created for this group. The person can register or log in using the invited email address and accept the invitation to join.
+                </p>
+            </div>
+
+            <div class="modal-actions">
+
+                <button type="submit" class="primary-btn">
+                    Send Invitation
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    data-close-modal="memberModal"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ====================================== -->
+<!-- EDIT EXPENSE MODAL -->
+<!-- ====================================== -->
+
+<div class="modal-overlay hidden" id="editExpenseModal">
+
+    <div class="workspace-modal">
+
+        <div class="modal-heading">
+
+            <div>
+                <p class="eyebrow">UPDATE TRANSACTION</p>
+                <h2>Edit Expense</h2>
+            </div>
+
+            <button
+                type="button"
+                class="modal-close"
+                data-close-modal="editExpenseModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="editExpenseForm">
+
+            <label for="editExpenseDescription">
+                Expense Description
+            </label>
+
+            <input
+                type="text"
+                id="editExpenseDescription"
+                maxlength="150"
+                required
+            >
+
+            <label for="editExpenseAmount">
+                Amount (₹)
+            </label>
+
+            <input
+                type="number"
+                id="editExpenseAmount"
+                min="0.01"
+                step="0.01"
+                required
+            >
+
+            <div class="modal-actions">
+
+                <button type="submit" class="primary-btn">
+                    Update Expense
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    data-close-modal="editExpenseModal"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- JAVASCRIPT -->
+<script src="group-details.js"></script>
+
+</body>
+</html>

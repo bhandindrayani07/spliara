@@ -2,1120 +2,534 @@
 const API_URL = "/api";
 const token = sessionStorage.getItem("spliaraToken");
 
-const groupsList = document.getElementById("groupsList");
-const groupDetails = document.getElementById("groupDetails");
-const groupFormContainer = document.getElementById("groupFormContainer");
-const expenseFormContainer = document.getElementById("expenseFormContainer");
 const dashboardMessage = document.getElementById("dashboardMessage");
 
-let selectedGroup = null;
-let editingExpenseId = null;
-let currentUserId = null;
-let groupMembers = [];
-let simplifiedTransactions = [];
-
-// ==========================================
-// AUTHENTICATION
-// ==========================================
+let currentUser = null;
+let allGroups = [];
+let allExpenses = [];
+let spendingChart = null;
 
 if (!token) {
     window.location.href = "/";
 }
 
-// ==========================================
-// COMMON API REQUEST FUNCTION
-// ==========================================
+// ========================================
+// API REQUEST HANDLER
+// ========================================
 
-async function apiRequest(endpoint, options = {}) {
+async function apiRequest(endpoint) {
     const response = await fetch(`${API_URL}${endpoint}`, {
-        ...options,
+        method: "GET",
         headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            ...options.headers
+            Authorization: `Bearer ${token}`
         }
     });
 
-    const responseText = await response.text();
-
-    let data = {};
-
-    try {
-        data = responseText ? JSON.parse(responseText) : {};
-    } catch {
-        data = {};
-    }
+    const data = await response.json().catch(() => ({}));
 
     if (response.status === 401 || response.status === 403) {
         sessionStorage.removeItem("spliaraToken");
         window.location.href = "/";
-        throw new Error(
-            data.message || "Your session has expired. Please log in again."
-        );
+        throw new Error("Your session has expired. Please log in again.");
     }
 
     if (!response.ok) {
-        throw new Error(data.message || "Something went wrong.");
+        throw new Error(data.message || "Unable to load data.");
     }
 
     return data;
 }
 
-// ==========================================
-// MESSAGE FUNCTION
-// ==========================================
+// ========================================
+// DASHBOARD MESSAGES
+// ========================================
 
 function showMessage(message, type = "success") {
+    if (!dashboardMessage) return;
+
     dashboardMessage.textContent = message;
     dashboardMessage.className = type === "error" ? "error" : "";
 }
 
-// ==========================================
-// ACTION BUTTON
-// ==========================================
+// ========================================
+// CURRENCY FORMATTER
+// ========================================
 
-function createActionButton(text, className, handler) {
-    const button = document.createElement("button");
-
-    button.type = "button";
-    button.textContent = text;
-    button.className = `action-btn ${className}`;
-
-    button.addEventListener("click", handler);
-
-    return button;
+function formatCurrency(amount) {
+    return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2
+    }).format(Number(amount) || 0);
 }
 
-// ==========================================
-// LOAD USER PROFILE
-// ==========================================
+// ========================================
+// LOAD PROFILE
+// ========================================
 
 async function loadProfile() {
-    try {
-        const data = await apiRequest("/auth/profile");
+    const data = await apiRequest("/auth/profile");
 
-        currentUserId = Number(data.user.id);
+    currentUser = data.user;
 
-        document.getElementById("welcomeUser").textContent =
-            `Welcome, ${data.user.name}!`;
+    const welcomeUser = document.getElementById("welcomeUser");
 
-    } catch (error) {
-        showMessage(error.message, "error");
+    if (welcomeUser && currentUser?.name) {
+        welcomeUser.textContent = `Welcome, ${currentUser.name}!`;
     }
 }
 
-// ==========================================
+// ========================================
 // LOAD GROUPS
-// ==========================================
+// ========================================
 
 async function loadGroups() {
-    groupsList.textContent = "Loading your groups...";
+    const data = await apiRequest("/groups");
 
-    try {
-        const data = await apiRequest("/groups");
+    allGroups = data.groups || [];
 
-        groupsList.replaceChildren();
+    updateGroupCount(allGroups.length);
+    updateTotalExpenses(allGroups);
 
-        if (!data.groups || data.groups.length === 0) {
-            const emptyMessage = document.createElement("p");
-            emptyMessage.textContent =
-                "No groups yet. Create your first group!";
+    return allGroups;
+}
 
-            groupsList.appendChild(emptyMessage);
-            return;
-        }
+// ========================================
+// UPDATE SUMMARY CARDS
+// ========================================
 
-        data.groups.forEach(group => {
-            const card = document.createElement("div");
-            card.className = "group-card";
+function updateGroupCount(count) {
+    const element = document.getElementById("dashboardGroupCount");
 
-            const heading = document.createElement("h3");
-            heading.textContent = group.name;
-
-            const description = document.createElement("p");
-            description.textContent = "View group expenses";
-
-            const arrow = document.createElement("span");
-            arrow.className = "group-arrow";
-            arrow.textContent = "View details →";
-            arrow.tabIndex = 0;
-            arrow.setAttribute("role", "button");
-
-            arrow.addEventListener("click", () => {
-                openGroup(group);
-            });
-
-            arrow.addEventListener("keydown", event => {
-                if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    openGroup(group);
-                }
-            });
-
-            card.append(heading, description, arrow);
-            groupsList.appendChild(card);
-        });
-
-    } catch (error) {
-        groupsList.textContent = error.message;
+    if (element) {
+        element.textContent = count;
     }
 }
 
-// ==========================================
-// CREATE GROUP
-// ==========================================
+function updateTotalExpenses(groups) {
+    const total = groups.reduce((sum, group) => {
+        return sum + Number(group.total_expenses || 0);
+    }, 0);
 
-document.getElementById("addGroupBtn").addEventListener("click", () => {
-    groupFormContainer.classList.remove("hidden");
-    document.getElementById("groupName").focus();
-});
+    const element = document.getElementById("dashboardTotalExpenses");
 
-document.getElementById("cancelGroupBtn").addEventListener("click", () => {
-    document.getElementById("groupForm").reset();
-    groupFormContainer.classList.add("hidden");
-});
-
-document.getElementById("groupForm").addEventListener(
-    "submit",
-    async event => {
-        event.preventDefault();
-
-        const name = document.getElementById("groupName").value.trim();
-        const submitButton = event.submitter;
-
-        if (!name) return;
-
-        submitButton.disabled = true;
-        submitButton.textContent = "Saving...";
-
-        try {
-            const data = await apiRequest("/groups", {
-                method: "POST",
-                body: JSON.stringify({ name })
-            });
-
-            document.getElementById("groupForm").reset();
-            groupFormContainer.classList.add("hidden");
-
-            showMessage(data.message || "Group created successfully!");
-
-            await loadGroups();
-
-        } catch (error) {
-            showMessage(error.message, "error");
-
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = "Save Group";
-        }
+    if (element) {
+        element.textContent = formatCurrency(total);
     }
-);
-
-// ==========================================
-// OPEN GROUP
-// ==========================================
-
-async function openGroup(group) {
-    selectedGroup = group;
-
-    document.getElementById("selectedGroupName").textContent = group.name;
-
-    document.querySelector(".groups-section").classList.add("hidden");
-    groupDetails.classList.remove("hidden");
-
-    expenseFormContainer.classList.add("hidden");
-    document.getElementById("editGroupContainer").classList.add("hidden");
-    document.getElementById("editExpenseContainer").classList.add("hidden");
-
-    document.getElementById("settlementForm").reset();
-
-    await Promise.all([
-        loadExpenses(group.id),
-        loadFinance(group.id),
-        loadGroupMembers(group.id)
-    ]);
 }
 
-// ==========================================
-// EDIT GROUP
-// ==========================================
+// ========================================
+// LOAD EXPENSES FROM ALL GROUPS
+// ========================================
 
-document.getElementById("editGroupBtn").addEventListener("click", () => {
-    if (!selectedGroup) return;
+async function loadAllExpenses(groups) {
+    if (groups.length === 0) {
+        allExpenses = [];
+        return [];
+    }
 
-    document.getElementById("editGroupName").value = selectedGroup.name;
-
-    document.getElementById("editGroupContainer").classList.remove("hidden");
-    document.getElementById("editGroupName").focus();
-});
-
-document.getElementById("cancelEditGroupBtn").addEventListener("click", () => {
-    document.getElementById("editGroupForm").reset();
-    document.getElementById("editGroupContainer").classList.add("hidden");
-});
-
-document.getElementById("editGroupForm").addEventListener(
-    "submit",
-    async event => {
-        event.preventDefault();
-
-        if (!selectedGroup) return;
-
-        const name = document.getElementById("editGroupName").value.trim();
-        const submitButton = event.submitter;
-
-        if (!name) return;
-
-        submitButton.disabled = true;
-        submitButton.textContent = "Updating...";
-
+    const requests = groups.map(async group => {
         try {
-            const data = await apiRequest(`/groups/${selectedGroup.id}`, {
-                method: "PUT",
-                body: JSON.stringify({ name })
-            });
+            const firstPage = await apiRequest(
+                `/expenses?groupId=${encodeURIComponent(group.id)}&limit=100&page=1`
+            );
 
-            selectedGroup.name = name;
+            let expenses = [...(firstPage.expenses || [])];
 
-            document.getElementById("selectedGroupName").textContent = name;
-            document.getElementById("editGroupContainer").classList.add("hidden");
-            document.getElementById("editGroupForm").reset();
+            const totalPages = firstPage.pagination?.totalPages || 1;
 
-            showMessage(data.message || "Group updated successfully!");
+            // Fetch remaining pages
+            for (let page = 2; page <= totalPages; page++) {
+                const pageData = await apiRequest(
+                    `/expenses?groupId=${encodeURIComponent(group.id)}&limit=100&page=${page}`
+                );
 
-            await loadGroups();
+                expenses.push(...(pageData.expenses || []));
+            }
+
+            return expenses.map(expense => ({
+                ...expense,
+                groupName: group.name,
+                groupId: group.id
+            }));
 
         } catch (error) {
-            showMessage(error.message, "error");
+            console.error(
+                `Could not load expenses for ${group.name}:`,
+                error.message
+            );
 
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = "Update Group";
+            return [];
         }
-    }
-);
+    });
 
-// ==========================================
-// DELETE GROUP
-// ==========================================
+    const results = await Promise.all(requests);
 
-document.getElementById("deleteGroupBtn").addEventListener("click", async () => {
-    if (!selectedGroup) return;
+    allExpenses = results.flat();
 
-    const confirmed = window.confirm(
-        `Are you sure you want to delete "${selectedGroup.name}"?`
-    );
+    return allExpenses;
+}
 
-    if (!confirmed) return;
+// ========================================
+// SIX-MONTH DATE RANGE
+// ========================================
 
-    const button = document.getElementById("deleteGroupBtn");
+function getLastSixMonths() {
+    const months = [];
+    const today = new Date();
 
-    button.disabled = true;
-    button.textContent = "Deleting...";
-
-    try {
-        const data = await apiRequest(`/groups/${selectedGroup.id}`, {
-            method: "DELETE"
-        });
-
-        selectedGroup = null;
-
-        groupDetails.classList.add("hidden");
-        document.querySelector(".groups-section").classList.remove("hidden");
-
-        showMessage(data.message || "Group deleted successfully!");
-
-        await loadGroups();
-
-    } catch (error) {
-        showMessage(
-            `${error.message} If the group contains expenses, delete those first.`,
-            "error"
+    for (let i = 5; i >= 0; i--) {
+        const date = new Date(
+            today.getFullYear(),
+            today.getMonth() - i,
+            1
         );
 
-    } finally {
-        button.disabled = false;
-        button.textContent = "Delete Group";
+        months.push({
+            key: `${date.getFullYear()}-${String(
+                date.getMonth() + 1
+            ).padStart(2, "0")}`,
+
+            label: date.toLocaleDateString("en-IN", {
+                month: "short"
+            }),
+
+            year: date.getFullYear(),
+            amount: 0
+        });
     }
-});
 
-// ==========================================
-// LOAD GROUP MEMBERS
-// ==========================================
+    return months;
+}
 
-async function loadGroupMembers(groupId) {
-    const container = document.getElementById("splitMembersContainer");
+// ========================================
+// CALCULATE MONTHLY SPENDING
+// ========================================
 
-    container.textContent = "Loading group members...";
+function calculateMonthlySpending(expenses) {
+    const months = getLastSixMonths();
 
-    try {
-        const data = await apiRequest(`/groups/${groupId}/members`);
+    const monthMap = new Map(
+        months.map(month => [month.key, month])
+    );
 
-        groupMembers = data.members || [];
+    expenses.forEach(expense => {
+        const date = new Date(expense.created_at);
 
-        if (groupMembers.length === 0) {
-            container.textContent = "No group members found.";
+        if (Number.isNaN(date.getTime())) {
             return;
         }
 
-        renderSplitMembers();
+        const key = `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+        ).padStart(2, "0")}`;
 
-    } catch (error) {
-        groupMembers = [];
-        container.textContent = error.message;
-        showMessage(error.message, "error");
-    }
+        const month = monthMap.get(key);
+
+        if (month) {
+            month.amount += Number(expense.amount) || 0;
+        }
+    });
+
+    return months;
 }
 
-// ==========================================
-// RENDER DYNAMIC SPLIT MEMBERS
-// ==========================================
+// ========================================
+// RENDER MONTHLY SPENDING CHART
+// ========================================
 
-function renderSplitMembers() {
-    const container = document.getElementById("splitMembersContainer");
+function renderSpendingChart(months) {
+    const container = document.getElementById(
+        "monthlySpendingChart"
+    );
 
     if (!container) return;
 
+    if (spendingChart) {
+        spendingChart.destroy();
+        spendingChart = null;
+    }
+
+    const hasExpenses = months.some(month => month.amount > 0);
+
+    if (!hasExpenses) {
+        container.replaceChildren();
+
+        const message = document.createElement("p");
+
+        message.className = "empty-state";
+
+        message.textContent =
+            "No expenses recorded in the last six months yet. Add expenses to see your spending overview.";
+
+        container.appendChild(message);
+
+        return;
+    }
+
+    if (typeof Chart === "undefined") {
+        container.textContent =
+            "The spending chart could not be loaded. Please refresh the page.";
+
+        return;
+    }
+
     container.replaceChildren();
 
-    const splitType = document.getElementById("splitType").value;
+    const canvas = document.createElement("canvas");
 
-    groupMembers.forEach(member => {
-        const memberId = Number(member.id);
-
-        const row = document.createElement("div");
-        row.className = "split-member-row";
-
-        const label = document.createElement("label");
-        label.className = "split-member-label";
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = true;
-        checkbox.dataset.userId = memberId;
-        checkbox.className = "split-member-checkbox";
-
-        const name = document.createElement("span");
-        name.textContent = member.name;
-
-        label.append(checkbox, name);
-
-        row.appendChild(label);
-
-        if (splitType !== "equal") {
-            const shareInput = document.createElement("input");
-
-            shareInput.type = "number";
-            shareInput.min = "0";
-            shareInput.step = splitType === "percentage" ? "0.01" : "0.01";
-            shareInput.placeholder =
-                splitType === "exact" ? "Share ₹" : "Percentage %";
-
-            shareInput.className = "split-share-input";
-            shareInput.dataset.userId = memberId;
-            shareInput.required = true;
-
-            checkbox.addEventListener("change", () => {
-                shareInput.disabled = !checkbox.checked;
-
-                if (!checkbox.checked) {
-                    shareInput.value = "";
-                    shareInput.required = false;
-                } else {
-                    shareInput.required = true;
-                }
-            });
-
-            row.appendChild(shareInput);
-        }
-
-        container.appendChild(row);
-    });
-}
-
-// ==========================================
-// SPLIT TYPE CHANGE
-// ==========================================
-
-document.getElementById("splitType").addEventListener("change", () => {
-    renderSplitMembers();
-});
-
-// ==========================================
-// COLLECT SELECTED SPLITS
-// ==========================================
-
-function getSelectedSplits() {
-    const splitType = document.getElementById("splitType").value;
-
-    const checkboxes = Array.from(
-        document.querySelectorAll(".split-member-checkbox")
+    canvas.setAttribute(
+        "aria-label",
+        "Monthly spending for the last six months"
     );
 
-    const selected = checkboxes.filter(checkbox => checkbox.checked);
+    canvas.setAttribute("role", "img");
 
-    if (selected.length === 0) {
-        throw new Error("Select at least one group member.");
-    }
+    container.appendChild(canvas);
 
-    return selected.map(checkbox => {
-        const userId = Number(checkbox.dataset.userId);
+    spendingChart = new Chart(canvas, {
+        type: "bar",
 
-        if (splitType === "equal") {
-            return { userId };
-        }
+        data: {
+            labels: months.map(month => month.label),
 
-        const shareInput = document.querySelector(
-            `.split-share-input[data-user-id="${userId}"]`
-        );
+            datasets: [{
+                label: "Total Spending",
 
-        const value = Number(shareInput.value);
+                data: months.map(month => month.amount),
 
-        if (
-            shareInput.value.trim() === "" ||
-            !Number.isFinite(value) ||
-            value < 0
-        ) {
-            throw new Error(
-                `Enter a valid share for ${checkbox.parentElement.textContent.trim()}.`
-            );
-        }
+                backgroundColor: "#87A96B",
+                hoverBackgroundColor: "#66864D",
 
-        if (splitType === "exact") {
-            return {
-                userId,
-                amount: value
-            };
-        }
+                borderRadius: 7,
+                borderSkipped: false,
 
-        return {
-            userId,
-            percentage: value
-        };
-    });
-}
+                barPercentage: 0.55,
+                categoryPercentage: 0.7
+            }]
+        },
 
-// ==========================================
-// LOAD EXPENSES
-// ==========================================
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
 
-async function loadExpenses(groupId) {
-    const expensesList = document.getElementById("expensesList");
+            plugins: {
+                legend: {
+                    display: false
+                },
 
-    expensesList.textContent = "Loading expenses...";
+                tooltip: {
+                    backgroundColor: "#5A3E2B",
+                    padding: 12,
 
-    try {
-        const data = await apiRequest(
-            `/expenses?groupId=${groupId}&limit=100`
-        );
+                    callbacks: {
+                        label: context => {
+                            return ` ${formatCurrency(context.raw)}`;
+                        }
+                    }
+                }
+            },
 
-        expensesList.replaceChildren();
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
 
-        const expenses = data.expenses || [];
+                    border: {
+                        display: false
+                    },
 
-        const total = expenses.reduce((sum, expense) => {
-            return sum + Number(expense.amount);
-        }, 0);
+                    ticks: {
+                        color: "#82776D",
 
-        document.getElementById("totalExpenses").textContent =
-            `₹${total.toFixed(2)}`;
+                        font: {
+                            family: "DM Sans"
+                        }
+                    }
+                },
 
-        if (expenses.length === 0) {
-            const emptyMessage = document.createElement("p");
-            emptyMessage.textContent =
-                "No expenses yet. Add your first expense!";
+                y: {
+                    beginAtZero: true,
 
-            expensesList.appendChild(emptyMessage);
-            return;
-        }
+                    grid: {
+                        color: "#EEE9E0"
+                    },
 
-        expenses.forEach(expense => {
-            const card = document.createElement("div");
-            card.className = "expense-card";
+                    border: {
+                        display: false,
+                        dash: [4, 4]
+                    },
 
-            const details = document.createElement("div");
-            details.className = "expense-info";
+                    ticks: {
+                        color: "#82776D",
 
-            const heading = document.createElement("h3");
-            heading.textContent = expense.description;
-
-            const date = document.createElement("p");
-            date.textContent = new Date(expense.created_at)
-                .toLocaleDateString("en-IN");
-
-            const amount = document.createElement("strong");
-            amount.textContent = `₹${Number(expense.amount).toFixed(2)}`;
-
-            details.append(heading, date);
-
-            const actions = document.createElement("div");
-            actions.className = "expense-actions";
-
-            const editButton = createActionButton(
-                "Edit",
-                "edit-btn",
-                () => startEditExpense(expense)
-            );
-
-            const deleteButton = createActionButton(
-                "Delete",
-                "delete-btn",
-                () => deleteExpense(expense)
-            );
-
-            actions.append(editButton, deleteButton);
-
-            card.append(details, amount, actions);
-            expensesList.appendChild(card);
-        });
-
-    } catch (error) {
-        expensesList.textContent = error.message;
-        showMessage(error.message, "error");
-    }
-}
-
-// ==========================================
-// LOAD FINANCIAL DATA
-// ==========================================
-
-async function loadFinance(groupId) {
-    await Promise.all([
-        loadBalances(groupId),
-        loadSimplifiedDebts(groupId)
-    ]);
-}
-
-// ==========================================
-// LOAD MEMBER BALANCES
-// ==========================================
-
-async function loadBalances(groupId) {
-    const container = document.getElementById("balancesList");
-
-    container.textContent = "Loading balances...";
-
-    try {
-        const data = await apiRequest(
-            `/finance/groups/${groupId}/balances`
-        );
-
-        container.replaceChildren();
-
-        const balances = data.balances || [];
-
-        if (balances.length === 0) {
-            container.textContent = "No member balances available.";
-            return;
-        }
-
-        balances.forEach(member => {
-            const card = document.createElement("div");
-            card.className = "balance-card";
-
-            const name = document.createElement("h3");
-            name.textContent = member.name;
-
-            const status = document.createElement("p");
-            status.className = "balance-status";
-
-            const amount = document.createElement("strong");
-
-            const balance = Number(member.balance);
-
-            if (balance > 0) {
-                status.textContent = "Gets back";
-                amount.textContent = `+₹${balance.toFixed(2)}`;
-                card.classList.add("balance-positive");
-
-            } else if (balance < 0) {
-                status.textContent = "Owes";
-                amount.textContent = `-₹${Math.abs(balance).toFixed(2)}`;
-                card.classList.add("balance-negative");
-
-            } else {
-                status.textContent = "All settled";
-                amount.textContent = "₹0.00";
-                card.classList.add("balance-settled");
+                        callback: value => {
+                            return "₹" + Number(value).toLocaleString("en-IN");
+                        }
+                    }
+                }
             }
-
-            card.append(name, status, amount);
-            container.appendChild(card);
-        });
-
-    } catch (error) {
-        container.textContent = error.message;
-    }
-}
-
-// ==========================================
-// LOAD SIMPLIFIED DEBTS
-// ==========================================
-
-async function loadSimplifiedDebts(groupId) {
-    const container = document.getElementById("debtsList");
-
-    container.textContent = "Calculating simplified debts...";
-
-    try {
-        const data = await apiRequest(
-            `/finance/groups/${groupId}/simplified-debts`
-        );
-
-        container.replaceChildren();
-
-        simplifiedTransactions = data.transactions || [];
-
-        if (simplifiedTransactions.length === 0) {
-            const message = document.createElement("p");
-            message.textContent = "Everyone is settled. No payments needed!";
-
-            container.appendChild(message);
-
-        } else {
-            const count = document.createElement("p");
-            count.className = "transaction-count";
-            count.textContent =
-                `${data.transactionCount} suggested payment(s)`;
-
-            container.appendChild(count);
-
-            simplifiedTransactions.forEach(transaction => {
-                const card = document.createElement("div");
-                card.className = "debt-card";
-
-                const from = document.createElement("strong");
-                from.textContent = transaction.from.name;
-
-                const arrow = document.createElement("span");
-                arrow.className = "debt-arrow";
-                arrow.textContent = "→";
-
-                const to = document.createElement("strong");
-                to.textContent = transaction.to.name;
-
-                const amount = document.createElement("span");
-                amount.className = "debt-amount";
-                amount.textContent =
-                    `₹${Number(transaction.amount).toFixed(2)}`;
-
-                const people = document.createElement("div");
-                people.className = "debt-people";
-                people.append(from, arrow, to);
-
-                card.append(people, amount);
-                container.appendChild(card);
-            });
         }
-
-        updateSettlementOptions();
-
-    } catch (error) {
-        simplifiedTransactions = [];
-        container.textContent = error.message;
-        updateSettlementOptions();
-    }
-}
-
-// ==========================================
-// UPDATE SETTLEMENT RECEIVER OPTIONS
-// ==========================================
-
-function updateSettlementOptions() {
-    const select = document.getElementById("settlementReceiver");
-
-    select.replaceChildren();
-
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = "Select a suggested payment";
-
-    select.appendChild(placeholder);
-
-    const myDebts = simplifiedTransactions.filter(transaction => {
-        return Number(transaction.from.userId) === currentUserId;
     });
-
-    myDebts.forEach(transaction => {
-        const option = document.createElement("option");
-
-        option.value = transaction.to.userId;
-        option.textContent =
-            `${transaction.to.name} — ₹${Number(transaction.amount).toFixed(2)}`;
-
-        option.dataset.maxAmount = transaction.amount;
-
-        select.appendChild(option);
-    });
-
-    if (myDebts.length === 0) {
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "You have no suggested payments to make";
-        option.disabled = true;
-
-        select.appendChild(option);
-    }
 }
 
-// ==========================================
-// RECORD SETTLEMENT
-// ==========================================
-
-document.getElementById("settlementForm").addEventListener(
-    "submit",
-    async event => {
-        event.preventDefault();
-
-        if (!selectedGroup) return;
-
-        const receiverId = Number(
-            document.getElementById("settlementReceiver").value
-        );
-
-        const amount = Number(
-            document.getElementById("settlementAmount").value
-        );
-
-        const select = document.getElementById("settlementReceiver");
-        const selectedOption = select.options[select.selectedIndex];
-
-        const maximumAmount = Number(selectedOption?.dataset.maxAmount);
-
-        const submitButton = event.submitter;
-
-        if (!receiverId || !Number.isFinite(amount) || amount <= 0) {
-            showMessage("Please select a member and enter a valid amount.", "error");
-            return;
-        }
-
-        if (!Number.isFinite(maximumAmount) || amount > maximumAmount + 0.001) {
-            showMessage(
-                "The payment cannot exceed the suggested amount for this member.",
-                "error"
-            );
-            return;
-        }
-
-        submitButton.disabled = true;
-        submitButton.textContent = "Recording...";
-
-        try {
-            const data = await apiRequest(
-                `/finance/groups/${selectedGroup.id}/settlements`,
-                {
-                    method: "POST",
-                    body: JSON.stringify({
-                        receivedBy: receiverId,
-                        amount
-                    })
-                }
-            );
-
-            document.getElementById("settlementForm").reset();
-
-            showMessage(
-                data.message || "Payment recorded successfully!"
-            );
-
-            await loadFinance(selectedGroup.id);
-
-        } catch (error) {
-            showMessage(error.message, "error");
-
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = "Record Payment";
-        }
-    }
-);
-
-// ==========================================
-// REFRESH FINANCES
-// ==========================================
-
-document.getElementById("refreshFinanceBtn").addEventListener(
-    "click",
-    async () => {
-        if (!selectedGroup) return;
-
-        const button = document.getElementById("refreshFinanceBtn");
-
-        button.disabled = true;
-        button.textContent = "Refreshing...";
-
-        try {
-            await loadFinance(selectedGroup.id);
-            showMessage("Group balances refreshed!");
-
-        } finally {
-            button.disabled = false;
-            button.textContent = "Refresh Balances";
-        }
-    }
-);
-
-// ==========================================
-// SHOW ADD EXPENSE FORM
-// ==========================================
-
-document.getElementById("addExpenseBtn").addEventListener("click", () => {
-    document.getElementById("expenseForm").reset();
-
-    editingExpenseId = null;
-
-    document.getElementById("editExpenseContainer").classList.add("hidden");
-    expenseFormContainer.classList.remove("hidden");
-
-    document.getElementById("splitType").value = "equal";
-    renderSplitMembers();
-
-    document.getElementById("expenseDescription").focus();
-});
-
-// ==========================================
-// CANCEL ADD EXPENSE
-// ==========================================
-
-document.getElementById("cancelExpenseBtn").addEventListener("click", () => {
-    document.getElementById("expenseForm").reset();
-    expenseFormContainer.classList.add("hidden");
-});
-
-// ==========================================
-// CREATE EXPENSE WITH SPLITS
-// ==========================================
-
-document.getElementById("expenseForm").addEventListener(
-    "submit",
-    async event => {
-        event.preventDefault();
-
-        if (!selectedGroup) return;
-
-        const description = document
-            .getElementById("expenseDescription")
-            .value.trim();
-
-        const amount = Number(
-            document.getElementById("expenseAmount").value
-        );
-
-        const splitType = document.getElementById("splitType").value;
-
-        const submitButton = event.submitter;
-
-        if (!description || !Number.isFinite(amount) || amount <= 0) {
-            showMessage("Enter a valid description and amount.", "error");
-            return;
-        }
-
-        let splits;
-
-        try {
-            splits = getSelectedSplits();
-
-        } catch (error) {
-            showMessage(error.message, "error");
-            return;
-        }
-
-        submitButton.disabled = true;
-        submitButton.textContent = "Saving...";
-
-        try {
-            const data = await apiRequest(
-                `/finance/groups/${selectedGroup.id}/expenses`,
-                {
-                    method: "POST",
-                    body: JSON.stringify({
-                        description,
-                        amount,
-                        splitType,
-                        splits
-                    })
-                }
-            );
-
-            document.getElementById("expenseForm").reset();
-            expenseFormContainer.classList.add("hidden");
-
-            showMessage(
-                data.message || "Expense and splits created successfully!"
-            );
-
-            await Promise.all([
-                loadExpenses(selectedGroup.id),
-                loadFinance(selectedGroup.id)
-            ]);
-
-        } catch (error) {
-            showMessage(error.message, "error");
-
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = "Save Expense";
-        }
-    }
-);
-
-// ==========================================
-// START EDITING EXPENSE
-// ==========================================
-
-function startEditExpense(expense) {
-    editingExpenseId = expense.id;
-
-    document.getElementById("editExpenseDescription").value =
-        expense.description;
-
-    document.getElementById("editExpenseAmount").value =
-        Number(expense.amount);
-
-    expenseFormContainer.classList.add("hidden");
-
-    document.getElementById("editExpenseContainer").classList.remove("hidden");
-
-    document.getElementById("editExpenseDescription").focus();
-}
-
-// ==========================================
-// CANCEL EDITING EXPENSE
-// ==========================================
-
-document.getElementById("cancelEditExpenseBtn").addEventListener("click", () => {
-    document.getElementById("editExpenseForm").reset();
-
-    document.getElementById("editExpenseContainer").classList.add("hidden");
-
-    editingExpenseId = null;
-});
-
-// ==========================================
-// UPDATE EXPENSE
-// ==========================================
-
-document.getElementById("editExpenseForm").addEventListener(
-    "submit",
-    async event => {
-        event.preventDefault();
-
-        if (!editingExpenseId || !selectedGroup) return;
-
-        const description = document
-            .getElementById("editExpenseDescription")
-            .value.trim();
-
-        const amount = Number(
-            document.getElementById("editExpenseAmount").value
-        );
-
-        const submitButton = event.submitter;
-
-        if (!description || !Number.isFinite(amount) || amount <= 0) {
-            showMessage("Enter a valid description and amount.", "error");
-            return;
-        }
-
-        submitButton.disabled = true;
-        submitButton.textContent = "Updating...";
-
-        try {
-            const data = await apiRequest(`/expenses/${editingExpenseId}`, {
-                method: "PUT",
-                body: JSON.stringify({
-                    description,
-                    amount
-                })
-            });
-
-            document.getElementById("editExpenseForm").reset();
-
-            document.getElementById("editExpenseContainer").classList.add("hidden");
-
-            editingExpenseId = null;
-
-            showMessage(data.message || "Expense updated successfully!");
-
-            await Promise.all([
-                loadExpenses(selectedGroup.id),
-                loadFinance(selectedGroup.id)
-            ]);
-
-        } catch (error) {
-            showMessage(error.message, "error");
-
-        } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = "Update Expense";
-        }
-    }
-);
-
-// ==========================================
-// DELETE EXPENSE
-// ==========================================
-
-async function deleteExpense(expense) {
-    const confirmed = window.confirm(
-        `Are you sure you want to delete "${expense.description}"?`
+// ========================================
+// SMART SPENDING INSIGHTS
+// ========================================
+
+function renderSpendingInsight(months) {
+    const element = document.getElementById(
+        "spendingInsightText"
     );
 
-    if (!confirmed) return;
+    if (!element) return;
 
-    try {
-        const data = await apiRequest(`/expenses/${expense.id}`, {
-            method: "DELETE"
-        });
+    const currentMonth = months[months.length - 1];
+    const previousMonth = months[months.length - 2];
 
-        showMessage(data.message || "Expense deleted successfully!");
+    const totalRecorded = months.reduce((sum, month) => {
+        return sum + month.amount;
+    }, 0);
 
-        await Promise.all([
-            loadExpenses(selectedGroup.id),
-            loadFinance(selectedGroup.id)
-        ]);
+    if (totalRecorded === 0) {
+        element.textContent =
+            "There is not enough spending history yet. Add expenses to your groups and your insights will appear here.";
 
-    } catch (error) {
-        showMessage(error.message, "error");
+        return;
     }
+
+    const highestMonth = months.reduce((highest, month) => {
+        return month.amount > highest.amount ? month : highest;
+    }, months[0]);
+
+    if (currentMonth.amount === 0 && previousMonth.amount === 0) {
+        element.textContent =
+            `Your recorded spending over the last six months is ${formatCurrency(totalRecorded)}. No expenses have been recorded in the current or previous month yet.`;
+
+        return;
+    }
+
+    if (previousMonth.amount === 0 && currentMonth.amount > 0) {
+        element.textContent =
+            `You have recorded ${formatCurrency(currentMonth.amount)} in expenses this month so far. Your highest spending month in this overview was ${highestMonth.label}, with ${formatCurrency(highestMonth.amount)}.`;
+
+        return;
+    }
+
+    if (currentMonth.amount === 0 && previousMonth.amount > 0) {
+        element.textContent =
+            `You have not recorded any expenses this month so far. Last month, your groups recorded ${formatCurrency(previousMonth.amount)} in expenses.`;
+
+        return;
+    }
+
+    const difference = currentMonth.amount - previousMonth.amount;
+
+    const percentage = Math.round(
+        Math.abs(difference) / previousMonth.amount * 100
+    );
+
+    let comparison;
+
+    if (difference > 0) {
+        comparison =
+            `Spending is ${percentage}% higher than last month so far.`;
+    } else if (difference < 0) {
+        comparison =
+            `Spending is ${percentage}% lower than last month so far.`;
+    } else {
+        comparison =
+            "Spending is currently the same as last month.";
+    }
+
+    element.textContent =
+        `Your groups have recorded ${formatCurrency(currentMonth.amount)} this month. ${comparison} Your highest spending month in this overview was ${highestMonth.label}, with ${formatCurrency(highestMonth.amount)}.`;
 }
 
-// ==========================================
-// BACK TO GROUPS
-// ==========================================
+// ========================================
+// UPDATE SPENDING OVERVIEW
+// ========================================
 
-document.getElementById("backToGroupsBtn").addEventListener("click", () => {
-    selectedGroup = null;
-    editingExpenseId = null;
-    groupMembers = [];
-    simplifiedTransactions = [];
+function updateSpendingOverview(expenses) {
+    const monthlyData = calculateMonthlySpending(expenses);
 
-    groupDetails.classList.add("hidden");
-    document.querySelector(".groups-section").classList.remove("hidden");
+    renderSpendingChart(monthlyData);
+    renderSpendingInsight(monthlyData);
+}
 
-    expenseFormContainer.classList.add("hidden");
-    document.getElementById("editExpenseContainer").classList.add("hidden");
-    document.getElementById("editGroupContainer").classList.add("hidden");
-
-    showMessage("");
-});
-
-// ==========================================
+// ========================================
 // LOGOUT
-// ==========================================
+// ========================================
 
-document.getElementById("logoutBtn").addEventListener("click", () => {
-    sessionStorage.removeItem("spliaraToken");
-    window.location.href = "/";
-});
+const logoutBtn = document.getElementById("logoutBtn");
 
-// ==========================================
-// INITIAL DASHBOARD LOADING
-// ==========================================
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+        sessionStorage.removeItem("spliaraToken");
+        window.location.href = "/";
+    });
+}
+
+// ========================================
+// MOBILE SIDEBAR
+// ========================================
+
+const sidebar = document.getElementById("sidebar");
+const menuToggle = document.getElementById("menuToggle");
+const sidebarCloseBtn = document.getElementById("sidebarCloseBtn");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+function closeSidebar() {
+    sidebar?.classList.remove("open");
+    sidebarOverlay?.classList.remove("active");
+}
+
+if (menuToggle) {
+    menuToggle.addEventListener("click", () => {
+        sidebar?.classList.add("open");
+        sidebarOverlay?.classList.add("active");
+    });
+}
+
+if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener("click", closeSidebar);
+}
+
+if (sidebarOverlay) {
+    sidebarOverlay.addEventListener("click", closeSidebar);
+}
+
+// ========================================
+// INITIALIZE DASHBOARD
+// ========================================
 
 async function initializeDashboard() {
-    await loadProfile();
-    await loadGroups();
+    if (!token) return;
+
+    try {
+        await loadProfile();
+
+        const groups = await loadGroups();
+
+        const expenses = await loadAllExpenses(groups);
+
+        updateSpendingOverview(expenses);
+
+    } catch (error) {
+        console.error("Dashboard initialization error:", error);
+
+        showMessage(error.message, "error");
+
+        const chartContainer = document.getElementById(
+            "monthlySpendingChart"
+        );
+
+        if (chartContainer) {
+            chartContainer.textContent =
+                "Unable to load your spending overview. Please refresh the page.";
+        }
+    }
 }
 
 initializeDashboard();
