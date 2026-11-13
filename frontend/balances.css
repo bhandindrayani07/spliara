@@ -1,0 +1,454 @@
+
+/* ========================================
+   SPLIARA - BALANCES PAGE
+======================================== */
+
+.balances-content {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.balances-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.balances-heading h1 {
+    font-family: "Manrope", sans-serif;
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 800;
+    color: #29243b;
+    margin: 8px 0;
+}
+
+.balances-heading .welcome-description {
+    color: #817d87;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.balances-heading .primary-btn {
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+/* SUMMARY */
+
+.balances-summary-grid {
+    margin-bottom: 22px;
+}
+
+.balance-summary-card {
+    min-width: 0;
+}
+
+.balance-summary-card h2 {
+    overflow-wrap: anywhere;
+}
+
+.balance-positive {
+    color: #4d805d !important;
+}
+
+.balance-negative {
+    color: #a75d4c !important;
+}
+
+.balance-neutral {
+    color: #827c72 !important;
+}
+
+/* INFORMATION */
+
+.balance-information {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 18px;
+    margin-bottom: 25px;
+    border: 1px solid #e4e8dc;
+    border-radius: 12px;
+    background: #f2f4ec;
+    color: #656b5b;
+}
+
+.balance-info-icon {
+    font-size: 19px;
+    line-height: 1.3;
+    color: #718365;
+}
+
+.balance-information p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* PANEL */
+
+.balances-panel {
+    overflow: hidden;
+}
+
+.balances-panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.balances-panel-heading p:not(.eyebrow) {
+    color: #817d87;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 6px;
+}
+
+/* FILTERS */
+
+.balances-filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.5fr) minmax(180px, 1fr) auto;
+    gap: 15px;
+    align-items: end;
+    padding: 22px 0;
+}
+
+.balances-filters label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #615b55;
+}
+
+.balance-search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 13px;
+    border: 1px solid #e6e3dc;
+    border-radius: 9px;
+    background: #fff;
+    color: #8b867e;
+}
+
+.balance-search-wrapper input {
+    width: 100%;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #29243b;
+    font: inherit;
+    font-size: 13px;
+}
+
+.balance-search-wrapper:focus-within {
+    border-color: #829274;
+    box-shadow: 0 0 0 3px rgba(130, 146, 116, 0.12);
+}
+
+.balance-group-filter select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid #e6e3dc;
+    border-radius: 9px;
+    outline: none;
+    background: #fff;
+    color: #4e4942;
+    font: inherit;
+    font-size: 13px;
+}
+
+.balance-group-filter select:focus {
+    border-color: #829274;
+}
+
+.balances-filters .secondary-btn {
+    min-height: 44px;
+    white-space: nowrap;
+}
+
+/* TABLE */
+
+.balances-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.balances-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.balances-table thead {
+    background: #f7f7f2;
+}
+
+.balances-table th {
+    padding: 15px 16px;
+    color: #77746b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.balances-table td {
+    padding: 16px;
+    border-bottom: 1px solid #efeee9;
+    color: #4b4842;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.balances-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.balances-table tbody tr:hover {
+    background: #fbfbf8;
+}
+
+.balance-member-cell {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 160px;
+}
+
+.balance-member-cell strong {
+    font-weight: 700;
+    color: #39352f;
+}
+
+.balance-avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: #e9eee3;
+    color: #586c4e;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.balance-group-tag {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 7px;
+    background: #f2f0e9;
+    color: #766d5f;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.balance-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-receivable {
+    color: #477451 !important;
+    background: #edf4eb;
+}
+
+.status-owes {
+    color: #a15d49 !important;
+    background: #f8eeea;
+}
+
+.status-settled {
+    color: #77746b !important;
+    background: #f0efeb;
+}
+
+.balance-amount {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* MOBILE CARDS */
+
+.balances-mobile-list {
+    display: none;
+}
+
+.balance-mobile-card {
+    padding: 17px;
+    border: 1px solid #ebe9e2;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.balance-mobile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.balance-mobile-top .balance-member-cell {
+    min-width: 0;
+}
+
+.balance-mobile-top h3 {
+    margin: 0;
+    color: #39352f;
+    font-size: 13px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.balance-mobile-top p {
+    margin: 4px 0 0;
+    color: #8a857d;
+    font-size: 11px;
+}
+
+.balance-mobile-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 17px;
+    padding-top: 13px;
+    border-top: 1px solid #efeee9;
+}
+
+.balance-mobile-bottom span {
+    color: #817d75;
+    font-size: 12px;
+}
+
+.balance-mobile-bottom strong {
+    font-size: 14px;
+}
+
+/* FOOTER */
+
+.balances-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 20px;
+    margin-top: 12px;
+    border-top: 1px solid #efeee9;
+}
+
+.balances-footer p {
+    margin: 0;
+    color: #89847b;
+    font-size: 12px;
+}
+
+.balances-footer .text-link {
+    color: #687b5e;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.balances-footer .text-link:hover {
+    text-decoration: underline;
+}
+
+/* MESSAGES */
+
+.balances-message {
+    margin-top: 15px;
+    color: #687b5e;
+    font-size: 13px;
+}
+
+.balances-message:empty {
+    display: none;
+}
+
+.balances-message.error {
+    color: #ad5748;
+}
+
+.table-message {
+    padding: 35px 15px !important;
+    color: #89847b !important;
+    text-align: center;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+    .balances-filters {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .balance-search {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 650px) {
+    .balances-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .balances-heading .primary-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .balances-panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .balances-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .balance-search {
+        grid-column: auto;
+    }
+
+    .balances-table-wrapper {
+        display: none;
+    }
+
+    .balances-mobile-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .balances-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .balance-information {
+        padding: 13px;
+    }
+
+    .balance-mobile-top {
+        align-items: flex-start;
+    }
+}

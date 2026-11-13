@@ -10,7 +10,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
     <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="group-details.css">
@@ -24,34 +27,65 @@
     <aside class="sidebar" id="sidebar">
 
         <div class="sidebar-top">
-            <a href="dashboard.html" class="logo">spliara<span>.</span></a>
-            <button type="button" class="sidebar-close" id="sidebarCloseBtn">×</button>
+
+            <a href="dashboard.html" class="logo">
+                spliara<span>.</span>
+            </a>
+
+            <button
+                type="button"
+                class="sidebar-close"
+                id="sidebarCloseBtn"
+                aria-label="Close menu"
+            >×</button>
+
         </div>
 
         <div class="sidebar-label">WORKSPACE</div>
 
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-link"><span>⌂</span> Overview</a>
-            <a href="groups.html" class="nav-link active"><span>♧</span> My Groups</a>
-            <a href="expenses.html" class="nav-link"><span>▤</span> All Expenses</a>
-            <a href="balances.html" class="nav-link"><span>⇄</span> Balances</a>
-            <a href="settlements.html" class="nav-link"><span>↔</span> Settlements</a>
-            <a href="analytics.html" class="nav-link"><span>▥</span> Analytics</a>
+
+            <a href="dashboard.html" class="nav-link">
+                <span>⌂</span> Overview
+            </a>
+
+            <a href="groups.html" class="nav-link active" aria-current="page">
+                <span>♧</span> My Groups
+            </a>
+
+            <a href="expenses.html" class="nav-link">
+                <span>▤</span> All Expenses
+            </a>
+
+            <a href="balances.html" class="nav-link">
+                <span>⇄</span> Balances
+            </a>
+
+            <a href="settlements.html" class="nav-link">
+                <span>↔</span> Settlements
+            </a>
+
+            <a href="analytics.html" class="nav-link">
+                <span>▥</span> Analytics
+            </a>
+
         </nav>
 
         <div class="sidebar-label preferences-label">PREFERENCES</div>
 
         <nav class="sidebar-nav">
-            <a href="profile.html" class="nav-link"><span>♙</span> My Profile</a>
-            <a href="profile.html#accountSettings" class="nav-link"><span>⚙</span> Settings</a>
+
+            <a href="profile.html" class="nav-link">
+                <span>♙</span> My Profile
+            </a>
+
+            <a href="settings.html" class="nav-link">
+                <span>⚙</span> Settings
+            </a>
+
         </nav>
 
         <div class="sidebar-bottom">
-
-            <div class="sidebar-note">
-                <span>✦</span>
-                <p>Share expenses.<br>Keep friendships simple.</p>
-            </div>
 
             <button type="button" id="logoutBtn" class="sidebar-logout">
                 <span>↪</span> Logout
@@ -61,17 +95,25 @@
 
     </aside>
 
+    <!-- MOBILE OVERLAY -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
 
+        <!-- TOPBAR -->
         <header class="topbar">
 
-            <button type="button" class="menu-toggle" id="menuToggle">☰</button>
+            <button
+                type="button"
+                class="menu-toggle"
+                id="menuToggle"
+                aria-label="Open menu"
+            >☰</button>
 
             <div class="breadcrumb">
-                Workspace <span>/</span>
+                Workspace
+                <span>/</span>
                 <a href="groups.html">My Groups</a>
                 <span>/</span>
                 Group Workspace
@@ -83,6 +125,7 @@
 
         </header>
 
+        <!-- PAGE CONTENT -->
         <div class="dashboard-content group-workspace">
 
             <!-- BACK BUTTON -->
@@ -113,15 +156,23 @@
             <section class="group-summary-grid">
 
                 <article class="group-summary-card">
+
                     <p>Total Group Expenses</p>
+
                     <h2 id="totalExpenses">₹0</h2>
+
                     <span>All recorded expenses</span>
+
                 </article>
 
                 <article class="group-summary-card">
+
                     <p>Total Transactions</p>
+
                     <h2 id="totalTransactions">0</h2>
+
                     <span>Recorded expenses</span>
+
                 </article>
 
             </section>
@@ -133,10 +184,12 @@
                 <section class="workspace-panel expense-history-panel">
 
                     <div class="workspace-panel-heading">
+
                         <div>
                             <p class="eyebrow">TRANSACTION RECORD</p>
                             <h2>Expense History</h2>
                         </div>
+
                     </div>
 
                     <div id="expenseHistory" class="expense-history">
@@ -149,14 +202,20 @@
                 <section class="workspace-panel members-panel">
 
                     <div class="workspace-panel-heading">
+
                         <div>
                             <p class="eyebrow">YOUR PEOPLE</p>
                             <h2>Group Members</h2>
                         </div>
 
-                        <button type="button" class="secondary-btn" id="addMemberBtn">
+                        <button
+                            type="button"
+                            class="secondary-btn"
+                            id="addMemberBtn"
+                        >
                             + Add Member
                         </button>
+
                     </div>
 
                     <div id="groupMembers" class="group-members-list">
@@ -167,10 +226,12 @@
                     <div class="pending-invitations-section">
 
                         <div class="workspace-panel-heading invitation-heading">
+
                             <div>
                                 <p class="eyebrow">GROUP INVITES</p>
                                 <h3>Pending Invitations</h3>
                             </div>
+
                         </div>
 
                         <div id="pendingInvitations">
@@ -187,10 +248,12 @@
                 <section class="workspace-panel">
 
                     <div class="workspace-panel-heading">
+
                         <div>
                             <p class="eyebrow">WHO OWES WHOM</p>
                             <h2>Individual Balances</h2>
                         </div>
+
                     </div>
 
                     <div id="groupBalances">
@@ -203,10 +266,12 @@
                 <section class="workspace-panel">
 
                     <div class="workspace-panel-heading">
+
                         <div>
                             <p class="eyebrow">CLEAR YOUR DUES</p>
                             <h2>Settlements</h2>
                         </div>
+
                     </div>
 
                     <div id="groupSettlements">
@@ -218,7 +283,11 @@
             </div>
 
             <!-- STATUS MESSAGE -->
-            <p id="groupMessage" role="status" aria-live="polite"></p>
+            <p
+                id="groupMessage"
+                role="status"
+                aria-live="polite"
+            ></p>
 
         </div>
 
@@ -236,19 +305,28 @@
     <div class="workspace-modal">
 
         <div class="modal-heading">
+
             <div>
                 <p class="eyebrow">NEW TRANSACTION</p>
                 <h2>Add Expense</h2>
             </div>
 
-            <button type="button" class="modal-close" data-close-modal="expenseModal">
+            <button
+                type="button"
+                class="modal-close"
+                data-close-modal="expenseModal"
+                aria-label="Close expense modal"
+            >
                 ×
             </button>
+
         </div>
 
         <form id="expenseForm">
 
-            <label for="expenseDescription">Expense Description</label>
+            <label for="expenseDescription">
+                Expense Description
+            </label>
 
             <input
                 type="text"
@@ -258,7 +336,9 @@
                 required
             >
 
-            <label for="expenseAmount">Amount (₹)</label>
+            <label for="expenseAmount">
+                Amount (₹)
+            </label>
 
             <input
                 type="number"
@@ -275,7 +355,11 @@
                     Save Expense
                 </button>
 
-                <button type="button" class="secondary-btn" data-close-modal="expenseModal">
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    data-close-modal="expenseModal"
+                >
                     Cancel
                 </button>
 
@@ -329,12 +413,14 @@
             >
 
             <div class="invitation-note">
+
                 <span>✦</span>
 
                 <p>
                     <strong>How invitations work</strong><br>
                     An invitation will be created for this group. The person can register or log in using the invited email address and accept the invitation to join.
                 </p>
+
             </div>
 
             <div class="modal-actions">
@@ -379,6 +465,7 @@
                 type="button"
                 class="modal-close"
                 data-close-modal="editExpenseModal"
+                aria-label="Close edit expense modal"
             >
                 ×
             </button>

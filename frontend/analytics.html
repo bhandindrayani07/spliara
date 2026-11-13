@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analytics | Spliara</title>
+
+    <!-- Google Fonts - Same as Dashboard -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="analytics.css">
+
+    <!-- JavaScript -->
+    <script src="analytics.js" defer></script>
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- Standard Dashboard Logo -->
+        <div class="sidebar-top">
+            <a href="dashboard.html" class="logo">spliara<span>.</span></a>
+
+            <button
+                type="button"
+                class="sidebar-close"
+                id="sidebarCloseBtn"
+                aria-label="Close menu">
+                ×
+            </button>
+        </div>
+
+       
+
+        <!-- Navigation -->
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html" class="nav-link">
+                <span>⌂</span>
+                Overview
+            </a>
+
+            <a href="groups.html" class="nav-link">
+                <span>♧</span>
+                My Groups
+            </a>
+
+            <a href="expenses.html" class="nav-link">
+                <span>▤</span>
+                All Expenses
+            </a>
+
+            <a href="balances.html" class="nav-link">
+                <span>⇄</span>
+                Balances
+            </a>
+
+            <a href="settlements.html" class="nav-link">
+                <span>↔</span>
+                Settlements
+            </a>
+
+            <a href="analytics.html" class="nav-link active">
+                <span>▥</span>
+                Analytics
+            </a>
+
+        </nav>
+
+        <div class="sidebar-label preferences-label">PREFERENCES</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="profile.html" class="nav-link">
+                <span>♙</span>
+                My Profile
+            </a>
+
+            <a href="settings.html" class="nav-link">
+                <span>⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <!-- Sidebar Bottom -->
+        <div class="sidebar-bottom">
+
+            <button type="button" id="logoutBtn" class="sidebar-logout">
+                <span>↪</span>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <button id="menuToggle" class="menu-toggle" aria-label="Open menu">
+                ☰
+            </button>
+
+            <div class="breadcrumb">
+                Workspace <span>/</span> Analytics
+            </div>
+
+            <div class="topbar-user" id="welcomeUser">
+                Welcome!
+            </div>
+
+        </header>
+
+        <div class="analytics-container">
+
+            <!-- PAGE INTRO -->
+            <section class="analytics-intro">
+
+                <div>
+                    <p class="section-eyebrow">YOUR FINANCIAL OVERVIEW</p>
+
+                    <h1>Analytics</h1>
+
+                    <p>
+                        Understand your spending patterns and see where
+                        your shared expenses go.
+                    </p>
+                </div>
+
+                <div class="analytics-filter">
+
+                    <label for="analyticsGroupFilter">Select Group</label>
+
+                    <select id="analyticsGroupFilter">
+                        <option value="">All Groups</option>
+                    </select>
+
+                </div>
+
+            </section>
+
+            <!-- SUMMARY CARDS -->
+            <section class="analytics-summary-grid">
+
+                <article class="analytics-summary-card">
+
+                    <div class="summary-card-top">
+                        <span>Total Group Expenses</span>
+                        <span class="summary-icon">₹</span>
+                    </div>
+
+                    <h2 id="totalExpenses">₹0.00</h2>
+
+                    <p>Combined spending in your groups</p>
+
+                </article>
+
+                <article class="analytics-summary-card">
+
+                    <div class="summary-card-top">
+                        <span>Average Expense</span>
+                        <span class="summary-icon">↗</span>
+                    </div>
+
+                    <h2 id="averageExpense">₹0.00</h2>
+
+                    <p>Average amount per recorded expense</p>
+
+                </article>
+
+                <article class="analytics-summary-card">
+
+                    <div class="summary-card-top">
+                        <span>Total Transactions</span>
+                        <span class="summary-icon">▤</span>
+                    </div>
+
+                    <h2 id="totalTransactions">0</h2>
+
+                    <p>Recorded group expenses</p>
+
+                </article>
+
+                <article class="analytics-summary-card">
+
+                    <div class="summary-card-top">
+                        <span>Highest Expense</span>
+                        <span class="summary-icon">↑</span>
+                    </div>
+
+                    <h2 id="highestExpense">₹0.00</h2>
+
+                    <p id="highestExpenseName">No expenses yet</p>
+
+                </article>
+
+            </section>
+
+            <!-- CHARTS -->
+            <section class="analytics-charts-grid">
+
+                <!-- MONTHLY SPENDING -->
+                <article class="analytics-panel monthly-panel">
+
+                    <div class="analytics-panel-heading">
+
+                        <div>
+                            <p class="section-eyebrow">SPENDING OVER TIME</p>
+                            <h2>Monthly Expenses</h2>
+                        </div>
+
+                        <span class="panel-icon">↗</span>
+
+                    </div>
+
+                    <div class="chart-container" id="monthlyChart">
+
+                        <div class="analytics-loading">
+                            Loading monthly data...
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <!-- CATEGORY BREAKDOWN -->
+                <article class="analytics-panel category-panel">
+
+                    <div class="analytics-panel-heading">
+
+                        <div>
+                            <p class="section-eyebrow">WHERE YOUR MONEY GOES</p>
+                            <h2>Category Breakdown</h2>
+                        </div>
+
+                        <span class="panel-icon">◉</span>
+
+                    </div>
+
+                    <div class="chart-container" id="categoryChart">
+
+                        <div class="analytics-loading">
+                            Loading category data...
+                        </div>
+
+                    </div>
+
+                    <div class="category-legend" id="categoryLegend"></div>
+
+                </article>
+
+            </section>
+
+            <!-- GROUP COMPARISON -->
+            <section class="analytics-panel group-comparison-panel">
+
+                <div class="analytics-panel-heading">
+
+                    <div>
+                        <p class="section-eyebrow">COMPARE YOUR GROUPS</p>
+                        <h2>Group-wise Spending</h2>
+                    </div>
+
+                </div>
+
+                <div id="groupComparison">
+
+                    <div class="analytics-loading">
+                        Loading group comparison...
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- RECENT SPENDING -->
+            <section class="analytics-panel recent-analytics-panel">
+
+                <div class="analytics-panel-heading">
+
+                    <div>
+                        <p class="section-eyebrow">YOUR LATEST ACTIVITY</p>
+                        <h2>Recent Expenses</h2>
+                    </div>
+
+                    <a href="expenses.html" class="analytics-view-all">
+                        View all →
+                    </a>
+
+                </div>
+
+                <div class="analytics-table-wrapper">
+
+                    <table class="analytics-table">
+
+                        <thead>
+                            <tr>
+                                <th>EXPENSE</th>
+                                <th>GROUP</th>
+                                <th>PAID BY</th>
+                                <th>DATE</th>
+                                <th>AMOUNT</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="recentExpensesBody">
+
+                            <tr>
+                                <td colspan="5" class="table-message">
+                                    Loading expenses...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div
+                    id="recentExpensesMobile"
+                    class="recent-expenses-mobile">
+                </div>
+
+            </section>
+
+            <!-- MESSAGE -->
+            <div id="analyticsMessage" class="analytics-message"></div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

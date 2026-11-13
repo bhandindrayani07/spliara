@@ -1,0 +1,441 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Spliara | Settlements</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="settlements.css">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- BRAND LOGO -->
+        <div class="sidebar-top">
+
+            <a href="dashboard.html" class="logo">
+                spliara<span>.</span>
+            </a>
+
+            <button
+                type="button"
+                class="sidebar-close"
+                id="sidebarCloseBtn"
+                aria-label="Close menu"
+            >×</button>
+
+        </div>
+
+        <!-- WORKSPACE NAVIGATION -->
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html" class="nav-link">
+                <span>⌂</span>
+                Overview
+            </a>
+
+            <a href="groups.html" class="nav-link">
+                <span>♧</span>
+                My Groups
+            </a>
+
+            <a href="expenses.html" class="nav-link">
+                <span>▤</span>
+                All Expenses
+            </a>
+
+            <a href="balances.html" class="nav-link">
+                <span>⇄</span>
+                Balances
+            </a>
+
+            <a
+                href="settlements.html"
+                class="nav-link active"
+                aria-current="page"
+            >
+                <span>↔</span>
+                Settlements
+            </a>
+
+            <a href="analytics.html" class="nav-link">
+                <span>▥</span>
+                Analytics
+            </a>
+
+        </nav>
+
+        <!-- PREFERENCES NAVIGATION -->
+        <div class="sidebar-label preferences-label">
+            PREFERENCES
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="profile.html" class="nav-link">
+                <span>♙</span>
+                My Profile
+            </a>
+
+            <a href="settings.html" class="nav-link">
+                <span>⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <!-- SIDEBAR BOTTOM -->
+        <div class="sidebar-bottom">
+
+            <button
+                type="button"
+                id="logoutBtn"
+                class="sidebar-logout"
+            >
+                <span>↪</span>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- MOBILE OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <button
+                type="button"
+                class="menu-toggle"
+                id="menuToggle"
+                aria-label="Open menu"
+            >☰</button>
+
+            <div class="breadcrumb">
+                Workspace <span>/</span> Settlements
+            </div>
+
+            <div class="topbar-right">
+                <span id="welcomeUser">Welcome!</span>
+            </div>
+
+        </header>
+
+        <!-- PAGE CONTENT -->
+        <div class="dashboard-content settlements-content">
+
+            <!-- PAGE HEADING -->
+            <section class="settlements-heading">
+
+                <div>
+
+                    <p class="eyebrow">CLEAR YOUR SHARED DUES</p>
+
+                    <h1>Settlements</h1>
+
+                    <p class="welcome-description">
+                        Settle up with your group members and keep every payment organised.
+                    </p>
+
+                </div>
+
+                <a href="balances.html" class="secondary-btn">
+                    View Balances →
+                </a>
+
+            </section>
+
+            <!-- SUMMARY CARDS -->
+            <section class="summary-grid settlements-summary-grid">
+
+                <article class="summary-card">
+
+                    <div class="summary-icon walnut-icon">↗</div>
+
+                    <p>You Need to Pay</p>
+
+                    <h2 id="settlementsOweAmount">₹0.00</h2>
+
+                    <span>Outstanding amount you owe</span>
+
+                </article>
+
+                <article class="summary-card">
+
+                    <div class="summary-icon sage-icon">↙</div>
+
+                    <p>You Will Receive</p>
+
+                    <h2 id="settlementsReceiveAmount">₹0.00</h2>
+
+                    <span>Outstanding amount owed to you</span>
+
+                </article>
+
+                <article class="summary-card">
+
+                    <div class="summary-icon amber-icon">✓</div>
+
+                    <p>Recorded Settlements</p>
+
+                    <h2 id="settlementsCount">0</h2>
+
+                    <span>Payments recorded in your groups</span>
+
+                </article>
+
+            </section>
+
+            <!-- SUGGESTED SETTLEMENTS -->
+            <section class="dashboard-panel suggested-settlements-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <p class="eyebrow">SMART SUGGESTIONS</p>
+
+                        <h2>Suggested Settlements</h2>
+
+                        <p>
+                            Simplified payments that help your groups settle up with fewer transactions.
+                        </p>
+
+                    </div>
+
+                    <span
+                        class="panel-period"
+                        id="suggestedSettlementCount"
+                    >
+                        Loading...
+                    </span>
+
+                </div>
+
+                <div
+                    class="suggested-settlements-list"
+                    id="suggestedSettlementsList"
+                >
+
+                    <div class="settlement-empty">
+                        Loading suggested settlements...
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- RECORD SETTLEMENT -->
+            <section class="dashboard-panel record-settlement-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <p class="eyebrow">RECORD A PAYMENT</p>
+
+                        <h2>Settle Up</h2>
+
+                        <p>
+                            Record a payment you have already made to a group member.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <form id="settlementForm" class="settlement-form">
+
+                    <div class="settlement-form-grid">
+
+                        <div class="form-group">
+
+                            <label for="settlementGroup">
+                                Select Group
+                            </label>
+
+                            <select id="settlementGroup" required>
+                                <option value="">Choose a group</option>
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="settlementReceiver">
+                                Paid To
+                            </label>
+
+                            <select
+                                id="settlementReceiver"
+                                required
+                                disabled
+                            >
+                                <option value="">Choose a member</option>
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="settlementAmount">
+                                Amount (₹)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="settlementAmount"
+                                placeholder="Enter amount"
+                                min="0.01"
+                                step="0.01"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="settlement-form-footer">
+
+                        <p>
+                            Only record payments that have actually been made.
+                        </p>
+
+                        <button
+                            type="submit"
+                            class="primary-btn"
+                            id="recordSettlementBtn"
+                        >
+                            Record Settlement
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+            <!-- SETTLEMENT HISTORY -->
+            <section class="dashboard-panel settlement-history-panel">
+
+                <div class="panel-heading">
+
+                    <div>
+
+                        <p class="eyebrow">PAYMENT ACTIVITY</p>
+
+                        <h2>Settlement History</h2>
+
+                        <p>
+                            Review the payments recorded across your groups.
+                        </p>
+
+                    </div>
+
+                    <span
+                        class="panel-period"
+                        id="settlementHistoryCount"
+                    >
+                        Loading...
+                    </span>
+
+                </div>
+
+                <!-- HISTORY FILTER -->
+                <div class="settlement-history-filters">
+
+                    <div class="form-group">
+
+                        <label for="historyGroupFilter">
+                            Group
+                        </label>
+
+                        <select id="historyGroupFilter">
+                            <option value="">All groups</option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <!-- HISTORY TABLE -->
+                <div class="settlement-table-wrapper">
+
+                    <table class="settlement-table">
+
+                        <thead>
+                            <tr>
+                                <th>Paid By</th>
+                                <th>Received By</th>
+                                <th>Group</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="settlementHistoryBody">
+
+                            <tr>
+                                <td colspan="5" class="table-message">
+                                    Loading settlement history...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <!-- MOBILE HISTORY -->
+                <div
+                    class="settlement-history-mobile"
+                    id="settlementHistoryMobile"
+                ></div>
+
+            </section>
+
+            <!-- PAGE MESSAGE -->
+            <p
+                id="settlementsMessage"
+                role="status"
+                aria-live="polite"
+            ></p>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- JAVASCRIPT -->
+<script src="settlements.js"></script>
+
+</body>
+</html>

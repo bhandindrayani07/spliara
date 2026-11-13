@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Spliara | Balances</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="balances.css">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-top">
+            <a href="dashboard.html" class="logo">
+                spliara<span>.</span>
+            </a>
+
+            <button
+                type="button"
+                class="sidebar-close"
+                id="sidebarCloseBtn"
+                aria-label="Close menu"
+            >×</button>
+        </div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html" class="nav-link">
+                <span>⌂</span> Overview
+            </a>
+
+            <a href="groups.html" class="nav-link">
+                <span>♧</span> My Groups
+            </a>
+
+            <a href="expenses.html" class="nav-link">
+                <span>▤</span> All Expenses
+            </a>
+
+            <a href="balances.html" class="nav-link active" aria-current="page">
+                <span>⇄</span> Balances
+            </a>
+
+            <a href="settlements.html" class="nav-link">
+                <span>↔</span> Settlements
+            </a>
+
+            <a href="analytics.html" class="nav-link">
+                <span>▥</span> Analytics
+            </a>
+
+        </nav>
+
+        <div class="sidebar-label preferences-label">PREFERENCES</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="profile.html" class="nav-link">
+                <span>♙</span> My Profile
+            </a>
+
+            <a href="settings.html" class="nav-link">
+                <span>⚙</span> Settings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <button type="button" id="logoutBtn" class="sidebar-logout">
+                <span>↪</span> Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- MOBILE OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <button
+                type="button"
+                class="menu-toggle"
+                id="menuToggle"
+                aria-label="Open menu"
+            >☰</button>
+
+            <div class="breadcrumb">
+                Workspace <span>/</span> Balances
+            </div>
+
+            <div class="topbar-right">
+                <span id="welcomeUser">Welcome!</span>
+            </div>
+
+        </header>
+
+        <!-- PAGE CONTENT -->
+        <div class="dashboard-content balances-content">
+
+            <!-- PAGE HEADING -->
+            <section class="balances-heading">
+
+                <div>
+                    <p class="eyebrow">YOUR FINANCIAL OVERVIEW</p>
+
+                    <h1>Balances</h1>
+
+                    <p class="welcome-description">
+                        See what you owe and what others owe you across your groups.
+                    </p>
+                </div>
+
+                <a href="settlements.html" class="primary-btn">
+                    View Settlements →
+                </a>
+
+            </section>
+
+            <!-- SUMMARY CARDS -->
+            <section class="summary-grid balances-summary-grid">
+
+                <article class="summary-card balance-summary-card">
+
+                    <div class="summary-icon walnut-icon">↗</div>
+
+                    <p>You Owe</p>
+
+                    <h2 id="youOweAmount">₹0.00</h2>
+
+                    <span>Total amount you need to pay</span>
+
+                </article>
+
+                <article class="summary-card balance-summary-card">
+
+                    <div class="summary-icon sage-icon">↙</div>
+
+                    <p>Owed to You</p>
+
+                    <h2 id="owedToYouAmount">₹0.00</h2>
+
+                    <span>Total amount others need to pay you</span>
+
+                </article>
+
+                <article class="summary-card balance-summary-card">
+
+                    <div class="summary-icon amber-icon">⇄</div>
+
+                    <p>Net Balance</p>
+
+                    <h2 id="netBalanceAmount">₹0.00</h2>
+
+                    <span id="netBalanceDescription">
+                        Your overall financial position
+                    </span>
+
+                </article>
+
+            </section>
+
+            <!-- BALANCE INFORMATION -->
+            <section class="balance-information">
+
+                <span class="balance-info-icon">ⓘ</span>
+
+                <p>
+                    <strong>Understanding your balances:</strong>
+                    A positive balance means a member gets money back.
+                    A negative balance means a member owes money.
+                </p>
+
+            </section>
+
+            <!-- BALANCE LIST -->
+            <section class="dashboard-panel balances-panel">
+
+                <div class="panel-heading balances-panel-heading">
+
+                    <div>
+                        <p class="eyebrow">GROUP BREAKDOWN</p>
+
+                        <h2>Individual Balances</h2>
+
+                        <p>
+                            Track how much each group member owes or is owed.
+                        </p>
+                    </div>
+
+                    <span class="panel-period" id="balancesResultCount">
+                        Loading balances...
+                    </span>
+
+                </div>
+
+                <!-- SEARCH AND FILTERS -->
+                <div class="balances-filters">
+
+                    <div class="balance-search">
+
+                        <label for="balanceSearch">Search</label>
+
+                        <div class="balance-search-wrapper">
+
+                            <span aria-hidden="true">⌕</span>
+
+                            <input
+                                type="search"
+                                id="balanceSearch"
+                                placeholder="Search member or group..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="balance-group-filter">
+
+                        <label for="balanceGroupFilter">Group</label>
+
+                        <select id="balanceGroupFilter">
+                            <option value="">All groups</option>
+                        </select>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="clearBalanceFiltersBtn"
+                        class="secondary-btn"
+                    >
+                        Clear filters
+                    </button>
+
+                </div>
+
+                <!-- DESKTOP TABLE -->
+                <div class="balances-table-wrapper">
+
+                    <table class="balances-table">
+
+                        <thead>
+                            <tr>
+                                <th>Group Member</th>
+                                <th>Group</th>
+                                <th>Balance Status</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="balancesTableBody">
+
+                            <tr>
+                                <td colspan="4" class="table-message">
+                                    Loading your balances...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <!-- MOBILE CARDS -->
+                <div
+                    class="balances-mobile-list"
+                    id="balancesMobileList"
+                    aria-label="Individual balances"
+                ></div>
+
+                <!-- FOOTER -->
+                <div class="balances-footer">
+
+                    <p id="balancesFooterInfo">
+                        Showing 0 members
+                    </p>
+
+                    <a href="groups.html" class="text-link">
+                        View My Groups →
+                    </a>
+
+                </div>
+
+            </section>
+
+            <!-- EMPTY STATE / MESSAGE -->
+            <div
+                id="balancesMessage"
+                class="balances-message"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="balances.js"></script>
+
+</body>
+</html>

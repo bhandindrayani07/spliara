@@ -1,0 +1,512 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Settings | Spliara</title>
+
+    <!-- Google Fonts - Same as Dashboard -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="settings.css">
+
+    <!-- JavaScript -->
+    <script src="settings.js" defer></script>
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- BRAND LOGO -->
+        <div class="sidebar-top">
+
+            <a href="dashboard.html" class="logo">
+                spliara<span>.</span>
+            </a>
+
+            <button
+                type="button"
+                class="sidebar-close"
+                id="sidebarCloseBtn"
+                aria-label="Close menu">
+                ×
+            </button>
+
+        </div>
+
+        <!-- WORKSPACE NAVIGATION -->
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html" class="nav-link">
+                <span>⌂</span>
+                Overview
+            </a>
+
+            <a href="groups.html" class="nav-link">
+                <span>♧</span>
+                My Groups
+            </a>
+
+            <a href="expenses.html" class="nav-link">
+                <span>▤</span>
+                All Expenses
+            </a>
+
+            <a href="balances.html" class="nav-link">
+                <span>⇄</span>
+                Balances
+            </a>
+
+            <a href="settlements.html" class="nav-link">
+                <span>↔</span>
+                Settlements
+            </a>
+
+            <a href="analytics.html" class="nav-link">
+                <span>▥</span>
+                Analytics
+            </a>
+
+        </nav>
+
+        <!-- PREFERENCES NAVIGATION -->
+        <div class="sidebar-label preferences-label">
+            PREFERENCES
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="profile.html" class="nav-link">
+                <span>♙</span>
+                My Profile
+            </a>
+
+            <a href="settings.html" class="nav-link active">
+                <span>⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <!-- SIDEBAR BOTTOM -->
+        <div class="sidebar-bottom">
+
+            <button
+                type="button"
+                id="logoutBtn"
+                class="sidebar-logout">
+                <span>↪</span>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <button
+                type="button"
+                id="menuToggle"
+                class="menu-toggle"
+                aria-label="Open menu">
+                ☰
+            </button>
+
+            <div class="breadcrumb">
+                Workspace <span>/</span> Settings
+            </div>
+
+            <div class="topbar-user" id="welcomeUser">
+                Welcome!
+            </div>
+
+        </header>
+
+        <div class="settings-container">
+
+            <!-- PAGE INTRO -->
+            <section class="settings-intro">
+
+                <div>
+
+                    <p class="section-eyebrow">
+                        PREFERENCES & ACCOUNT
+                    </p>
+
+                    <h1>Settings</h1>
+
+                    <p>
+                        Customize your Spliara experience and
+                        manage your account preferences.
+                    </p>
+
+                </div>
+
+            </section>
+
+            <!-- APPEARANCE -->
+            <section class="settings-panel">
+
+                <div class="settings-panel-heading">
+
+                    <div class="settings-panel-icon">
+                        ◐
+                    </div>
+
+                    <div>
+
+                        <p class="section-eyebrow">
+                            PERSONALIZATION
+                        </p>
+
+                        <h2>Appearance</h2>
+
+                        <p>
+                            Choose how Spliara looks on your device.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="settings-control-row">
+
+                    <div class="settings-control-info">
+
+                        <h3>Theme Preference</h3>
+
+                        <p>
+                            Switch between light and Midnight Forest mode.
+                        </p>
+
+                    </div>
+
+                    <select id="themePreference" class="settings-select">
+
+                        <option value="light">Light Mode</option>
+
+                        <option value="dark">Midnight Forest</option>
+
+                    </select>
+
+                </div>
+
+            </section>
+
+            <!-- PROFILE PICTURE -->
+            <section class="settings-panel">
+
+                <div class="settings-panel-heading">
+
+                    <div class="settings-panel-icon">
+                        ♙
+                    </div>
+
+                    <div>
+
+                        <p class="section-eyebrow">
+                            PERSONAL IDENTITY
+                        </p>
+
+                        <h2>Profile Picture</h2>
+
+                        <p>
+                            Add a picture to personalize your account.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="picture-settings">
+
+                    <div class="settings-avatar" id="settingsAvatar">
+                        U
+                    </div>
+
+                    <div class="picture-settings-info">
+
+                        <h3 id="settingsDisplayName">
+                            Loading profile...
+                        </h3>
+
+                        <p>
+                            JPG, PNG or WebP. Maximum file size: 2 MB.
+                        </p>
+
+                        <div class="picture-actions">
+
+                            <label
+                                for="profilePictureInput"
+                                class="settings-secondary-btn">
+                                Upload Picture
+                            </label>
+
+                            <input
+                                type="file"
+                                id="profilePictureInput"
+                                accept="image/jpeg,image/png,image/webp"
+                                hidden
+                            >
+
+                            <button
+                                type="button"
+                                id="removePictureBtn"
+                                class="settings-text-btn">
+                                Remove Picture
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <p
+                    id="pictureMessage"
+                    class="settings-message"
+                    aria-live="polite">
+                </p>
+
+            </section>
+
+            <!-- CHANGE PASSWORD -->
+            <section class="settings-panel">
+
+                <div class="settings-panel-heading">
+
+                    <div class="settings-panel-icon">
+                        ♧
+                    </div>
+
+                    <div>
+
+                        <p class="section-eyebrow">
+                            ACCOUNT SECURITY
+                        </p>
+
+                        <h2>Change Password</h2>
+
+                        <p>
+                            Update your password to keep your account secure.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <form id="passwordForm">
+
+                    <div class="password-form-grid">
+
+                        <div class="settings-field">
+
+                            <label for="currentPassword">
+                                Current Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="currentPassword"
+                                placeholder="Enter current password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="settings-field">
+
+                            <label for="newPassword">
+                                New Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="newPassword"
+                                placeholder="Enter new password"
+                                minlength="8"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="settings-field">
+
+                            <label for="confirmPassword">
+                                Confirm New Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                placeholder="Confirm new password"
+                                minlength="8"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="settings-form-actions">
+
+                        <button
+                            type="submit"
+                            id="changePasswordBtn"
+                            class="settings-primary-btn">
+                            Update Password
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <p
+                    id="passwordMessage"
+                    class="settings-message"
+                    aria-live="polite">
+                </p>
+
+            </section>
+
+            <!-- ACCOUNT INFORMATION -->
+            <section class="settings-panel">
+
+                <div class="settings-panel-heading">
+
+                    <div class="settings-panel-icon">
+                        ◈
+                    </div>
+
+                    <div>
+
+                        <p class="section-eyebrow">
+                            ACCOUNT DETAILS
+                        </p>
+
+                        <h2>Account Information</h2>
+
+                        <p>
+                            Your registered account information.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="account-information-list">
+
+                    <div class="account-information-item">
+
+                        <span>Full Name</span>
+
+                        <strong id="settingsAccountName">
+                            Loading...
+                        </strong>
+
+                    </div>
+
+                    <div class="account-information-item">
+
+                        <span>Email Address</span>
+
+                        <strong id="settingsAccountEmail">
+                            Loading...
+                        </strong>
+
+                    </div>
+
+                    <div class="account-information-item">
+
+                        <span>Member Since</span>
+
+                        <strong id="settingsMemberSince">
+                            Loading...
+                        </strong>
+
+                    </div>
+
+                    <div class="account-information-item">
+
+                        <span>Account Status</span>
+
+                        <strong class="account-active">
+                            Active
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- LOGOUT -->
+            <section class="settings-panel logout-panel">
+
+                <div>
+
+                    <p class="section-eyebrow">
+                        SESSION
+                    </p>
+
+                    <h2>Sign Out</h2>
+
+                    <p>
+                        Sign out of your Spliara account on this device.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    id="settingsLogoutBtn"
+                    class="settings-logout-btn">
+                    ↪ Logout
+                </button>
+
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="settings-footer">
+
+                <span>
+                    Made for simpler shared expenses.
+                </span>
+
+                <span>
+                    Spliara © 2026
+                </span>
+
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

@@ -285,6 +285,8 @@ function renderMembers() {
 async function loadInvitations() {
     const container = document.getElementById("pendingInvitations");
 
+    if (!container) return;
+
     try {
         const data = await apiRequest(
             `/groups/${groupId}/invitations`
@@ -297,14 +299,26 @@ async function loadInvitations() {
     } catch (error) {
         console.error("Load invitations error:", error);
 
-        if (container) {
+        if (
+            error.message.toLowerCase().includes("only the group creator")
+        ) {
+            groupInvitations = [];
+
             container.innerHTML = `
                 <p class="empty-state">
-                    Could not load invitations.
-                    ${escapeHTML(error.message)}
+                    Only the group creator can manage pending invitations.
                 </p>
             `;
+
+            return;
         }
+
+        container.innerHTML = `
+            <p class="empty-state">
+                Unable to load invitations right now.
+                Please try again later.
+            </p>
+        `;
     }
 }
 
@@ -371,7 +385,6 @@ function setupMemberForm() {
 
     if (!form) return;
 
-    // Create the invitation link panel.
     let linkPanel = document.getElementById("invitationLinkPanel");
 
     if (!linkPanel) {
@@ -421,7 +434,6 @@ function setupMemberForm() {
         form.appendChild(linkPanel);
     }
 
-    // Copy invitation link.
     const copyButton = document.getElementById(
         "copyInvitationLinkBtn"
     );
@@ -458,7 +470,6 @@ function setupMemberForm() {
         }
     });
 
-    // Handle member form submission.
     form.addEventListener("submit", async event => {
         event.preventDefault();
 
@@ -495,7 +506,6 @@ function setupMemberForm() {
                 }
             );
 
-            // New user: show the generated invitation link.
             if (data.invitationLink) {
                 document.getElementById("invitationLinkInput").value =
                     data.invitationLink;
@@ -515,7 +525,6 @@ function setupMemberForm() {
                 );
 
             } else {
-                // Existing user: added directly to the group.
                 form.reset();
 
                 linkPanel.style.display = "none";

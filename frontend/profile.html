@@ -1,288 +1,406 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Spliara | My Profile</title>
+    <title>My Profile | Spliara</title>
 
+    <!-- Google Fonts - Same as Dashboard -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="dashboard.css">
     <link rel="stylesheet" href="profile.css">
+
+    <!-- JavaScript -->
+    <script src="profile.js" defer></script>
 </head>
 
 <body>
 
-    <!-- NAVIGATION -->
-    <header class="navbar">
-        <a href="dashboard.html" class="logo">
-            spliara<span>.</span>
-        </a>
+<div class="app-layout">
 
-        <nav class="nav-actions">
-            <a href="dashboard.html" class="back-link">
-                ← Dashboard
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- BRAND LOGO -->
+        <div class="sidebar-top">
+
+            <a href="dashboard.html" class="logo">
+                spliara<span>.</span>
             </a>
 
-            <button id="logoutBtn" class="logout-btn">
+            <button
+                type="button"
+                class="sidebar-close"
+                id="sidebarCloseBtn"
+                aria-label="Close menu">
+                ×
+            </button>
+
+        </div>
+
+        <!-- SIDEBAR NOTE -->
+        
+
+        <!-- WORKSPACE NAVIGATION -->
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html" class="nav-link">
+                <span>⌂</span>
+                Overview
+            </a>
+
+            <a href="groups.html" class="nav-link">
+                <span>♧</span>
+                My Groups
+            </a>
+
+            <a href="expenses.html" class="nav-link">
+                <span>▤</span>
+                All Expenses
+            </a>
+
+            <a href="balances.html" class="nav-link">
+                <span>⇄</span>
+                Balances
+            </a>
+
+            <a href="settlements.html" class="nav-link">
+                <span>↔</span>
+                Settlements
+            </a>
+
+            <a href="analytics.html" class="nav-link">
+                <span>▥</span>
+                Analytics
+            </a>
+
+        </nav>
+
+        <!-- PREFERENCES NAVIGATION -->
+        <div class="sidebar-label preferences-label">
+            PREFERENCES
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="profile.html" class="nav-link active">
+                <span>♙</span>
+                My Profile
+            </a>
+
+            <a href="settings.html" class="nav-link">
+                <span>⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <!-- SIDEBAR BOTTOM -->
+        <div class="sidebar-bottom">
+
+            <button
+                type="button"
+                id="logoutBtn"
+                class="sidebar-logout">
+                <span>↪</span>
                 Logout
             </button>
-        </nav>
-    </header>
 
-    <main class="profile-container">
+        </div>
 
-        <!-- PAGE HEADING -->
-        <section class="page-heading">
-            <p class="eyebrow">ACCOUNT SETTINGS</p>
-            <h1>My Profile</h1>
-            <p>Manage your personal information and account security.</p>
-        </section>
+    </aside>
 
-        <!-- PROFILE OVERVIEW -->
-        <section class="profile-overview card">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-            <div class="avatar-wrapper">
-                <img
-                    id="profileImage"
-                    src="https://placehold.co/160x160?text=Profile"
-                    alt="Profile picture"
-                >
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
 
-                <label for="profilePictureInput" class="upload-avatar">
-                    <span>+</span>
-                </label>
+        <!-- TOPBAR -->
+        <header class="topbar">
 
-                <input
-                    type="file"
-                    id="profilePictureInput"
-                    accept="image/png,image/jpeg,image/webp"
-                    hidden
-                >
+            <button
+                type="button"
+                id="menuToggle"
+                class="menu-toggle"
+                aria-label="Open menu">
+                ☰
+            </button>
+
+            <div class="breadcrumb">
+                Workspace <span>/</span> My Profile
             </div>
 
-            <div class="profile-identity">
-                <p class="eyebrow">YOUR ACCOUNT</p>
+            <div class="topbar-user" id="welcomeUser">
+                Welcome!
+            </div>
 
-                <h2 id="profileDisplayName">Loading profile...</h2>
+        </header>
 
-                <p id="profileDisplayEmail">
-                    Please wait while we load your details.
-                </p>
+        <div class="profile-container">
 
-                <span class="account-badge">
-                    Spliara Member
+            <!-- PAGE INTRO -->
+            <section class="profile-intro">
+
+                <div>
+
+                    <p class="section-eyebrow">
+                        YOUR ACCOUNT
+                    </p>
+
+                    <h1>My Profile</h1>
+
+                    <p>
+                        View and manage your personal information
+                        on Spliara.
+                    </p>
+
+                </div>
+
+            </section>
+
+            <!-- PROFILE OVERVIEW -->
+            <section class="profile-overview">
+
+                <div class="profile-avatar" id="profileAvatar">
+                    U
+                </div>
+
+                <div class="profile-overview-info">
+
+                    <h2 id="profileDisplayName">
+                        Loading profile...
+                    </h2>
+
+                    <p id="profileDisplayEmail">
+                        Loading email...
+                    </p>
+
+                    <span class="profile-member-label">
+                        SPLIARA MEMBER
+                    </span>
+
+                </div>
+
+            </section>
+
+            <!-- PROFILE LAYOUT -->
+            <div class="profile-layout">
+
+                <!-- PERSONAL INFORMATION -->
+                <section class="profile-panel">
+
+                    <div class="profile-panel-heading">
+
+                        <div>
+
+                            <p class="section-eyebrow">
+                                PERSONAL DETAILS
+                            </p>
+
+                            <h2>Personal Information</h2>
+
+                            <p>
+                                Keep your personal account information
+                                up to date.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <form id="profileForm">
+
+                        <div class="profile-form-grid">
+
+                            <div class="profile-field">
+
+                                <label for="profileName">
+                                    Full Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="profileName"
+                                    name="name"
+                                    placeholder="Enter your full name"
+                                    required
+                                    maxlength="100"
+                                >
+
+                            </div>
+
+                            <div class="profile-field">
+
+                                <label for="profileEmail">
+                                    Email Address
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="profileEmail"
+                                    name="email"
+                                    placeholder="Your email address"
+                                    disabled
+                                >
+
+                                <small>
+                                    Your registered email address.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="profile-form-actions">
+
+                            <button
+                                type="submit"
+                                id="saveProfileBtn"
+                                class="profile-primary-btn">
+                                Save Changes
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+                <!-- MEMBERSHIP INFORMATION -->
+                <section class="profile-panel">
+
+                    <div class="profile-panel-heading">
+
+                        <div>
+
+                            <p class="section-eyebrow">
+                                MEMBERSHIP
+                            </p>
+
+                            <h2>Account Overview</h2>
+
+                            <p>
+                                A quick overview of your Spliara membership.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="settings-list">
+
+                        <div class="settings-item">
+
+                            <div class="settings-item-icon">
+                                ♙
+                            </div>
+
+                            <div class="settings-item-info">
+
+                                <h3>Account Name</h3>
+
+                                <p id="memberAccountName">
+                                    Loading...
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="settings-item">
+
+                            <div class="settings-item-icon">
+                                ✉
+                            </div>
+
+                            <div class="settings-item-info">
+
+                                <h3>Registered Email</h3>
+
+                                <p id="memberAccountEmail">
+                                    Loading...
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="settings-item">
+
+                            <div class="settings-item-icon">
+                                ◷
+                            </div>
+
+                            <div class="settings-item-info">
+
+                                <h3>Member Since</h3>
+
+                                <p id="profileMemberSince">
+                                    Loading...
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="settings-item">
+
+                            <div class="settings-item-icon">
+                                ✓
+                            </div>
+
+                            <div class="settings-item-info">
+
+                                <h3>Account Status</h3>
+
+                                <p class="settings-status">
+                                    Active
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+            <!-- MESSAGE -->
+            <div
+                id="profileMessage"
+                class="profile-message"
+                aria-live="polite">
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="profile-footer">
+
+                <span>
+                    Made for simpler shared expenses.
                 </span>
-            </div>
 
-        </section>
+                <span>
+                    Spliara © 2026
+                </span>
 
-        <!-- PERSONAL INFORMATION -->
-        <section class="profile-section card">
+            </footer>
 
-            <div class="section-heading">
-                <div>
-                    <p class="eyebrow">01 — PERSONAL DETAILS</p>
-                    <h2>Personal Information</h2>
-                    <p>Update the information associated with your account.</p>
-                </div>
-            </div>
-
-            <form id="profileForm">
-
-                <div class="form-grid">
-
-                    <div class="form-group">
-                        <label for="fullName">Full Name</label>
-
-                        <input
-                            type="text"
-                            id="fullName"
-                            name="name"
-                            placeholder="Enter your full name"
-                            minlength="2"
-                            maxlength="100"
-                            required
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="emailAddress">Email Address</label>
-
-                        <input
-                            type="email"
-                            id="emailAddress"
-                            name="email"
-                            placeholder="Enter your email"
-                            maxlength="255"
-                            required
-                        >
-                    </div>
-
-                </div>
-
-                <div class="form-actions">
-                    <button type="reset" class="secondary-btn">
-                        Cancel
-                    </button>
-
-                    <button type="submit" class="primary-btn">
-                        Save Changes
-                    </button>
-                </div>
-
-            </form>
-
-        </section>
-
-        <!-- PROFILE PICTURE -->
-        <section class="profile-section card">
-
-            <div class="section-heading">
-                <div>
-                    <p class="eyebrow">02 — PROFILE PHOTO</p>
-                    <h2>Profile Picture</h2>
-                    <p>Choose a picture to personalise your account.</p>
-                </div>
-            </div>
-
-            <div class="picture-actions">
-                <div class="picture-preview">
-                    <img
-                        id="picturePreview"
-                        src="https://placehold.co/100x100?text=Photo"
-                        alt="Picture preview"
-                    >
-                </div>
-
-                <div class="picture-info">
-                    <h3>Upload a new picture</h3>
-                    <p>JPG, PNG or WebP. Maximum file size: 2 MB.</p>
-
-                    <button
-                        type="button"
-                        id="choosePictureBtn"
-                        class="secondary-btn"
-                    >
-                        Choose Picture
-                    </button>
-
-                    <button
-                        type="button"
-                        id="removePictureBtn"
-                        class="text-btn"
-                    >
-                        Remove Picture
-                    </button>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- SECURITY -->
-        <section class="profile-section card">
-
-            <div class="section-heading">
-                <div>
-                    <p class="eyebrow">03 — ACCOUNT SECURITY</p>
-                    <h2>Password & Security</h2>
-                    <p>Keep your account protected by updating your password.</p>
-                </div>
-            </div>
-
-            <form id="passwordForm">
-
-                <div class="form-grid">
-
-                    <div class="form-group full-width">
-                        <label for="currentPassword">Current Password</label>
-
-                        <input
-                            type="password"
-                            id="currentPassword"
-                            placeholder="Enter current password"
-                            required
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="newPassword">New Password</label>
-
-                        <input
-                            type="password"
-                            id="newPassword"
-                            placeholder="Enter new password"
-                            minlength="8"
-                            required
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirm New Password</label>
-
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            placeholder="Confirm new password"
-                            minlength="8"
-                            required
-                        >
-                    </div>
-
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="primary-btn">
-                        Update Password
-                    </button>
-                </div>
-
-            </form>
-
-        </section>
-
-        <!-- ACCOUNT INFORMATION -->
-        <section class="profile-section card">
-
-            <div class="section-heading">
-                <div>
-                    <p class="eyebrow">04 — ACCOUNT OVERVIEW</p>
-                    <h2>Account Information</h2>
-                    <p>Details about your Spliara account.</p>
-                </div>
-            </div>
-
-            <div class="account-details">
-
-                <div class="detail-row">
-                    <span>Account ID</span>
-                    <strong id="accountId">—</strong>
-                </div>
-
-                <div class="detail-row">
-                    <span>Member Since</span>
-                    <strong id="memberSince">—</strong>
-                </div>
-
-                <div class="detail-row">
-                    <span>Account Status</span>
-                    <strong class="status-active">Active</strong>
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- MESSAGE -->
-        <p id="profileMessage" class="profile-message" role="status"></p>
-
-        <!-- FOOTER -->
-        <footer class="profile-footer">
-            <p>Made with care by Spliara.</p>
-        </footer>
+        </div>
 
     </main>
 
-    <script src="profile.js"></script>
+</div>
 
 </body>
 </html>

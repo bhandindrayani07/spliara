@@ -1,0 +1,699 @@
+
+/* ========================================
+   SETTINGS PAGE
+======================================== */
+
+.settings-container {
+    width: min(1150px, 100%);
+    margin: 0 auto;
+    padding: 38px 48px 30px;
+}
+
+/* PAGE INTRO */
+
+.settings-intro {
+    margin-bottom: 28px;
+}
+
+.settings-intro h1 {
+    font-family: "Manrope", sans-serif;
+    font-size: clamp(28px, 3vw, 36px);
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+}
+
+.settings-intro > div > p:last-child {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* SETTINGS PANELS */
+
+.settings-panel {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 27px 29px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    min-width: 0;
+}
+
+.settings-panel-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 24px;
+}
+
+.settings-panel-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: var(--sage-light);
+    color: var(--sage-dark);
+    font-size: 21px;
+}
+
+/* MATCH PROFILE PAGE PANEL HEADINGS */
+
+.settings-panel-heading h2 {
+    font-family: "Manrope", sans-serif;
+    font-size: 21px;
+    letter-spacing: -0.5px;
+    margin-bottom: 7px;
+}
+
+.settings-panel-heading > div:last-child > p:last-child {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* APPEARANCE */
+
+.settings-control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding-top: 19px;
+    border-top: 1px solid var(--border);
+}
+
+.settings-control-info h3 {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.settings-control-info p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.settings-select {
+    flex-shrink: 0;
+    min-width: 155px;
+    padding: 11px 13px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--ivory);
+    color: var(--walnut);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.settings-select:focus {
+    outline: 2px solid var(--sage);
+    outline-offset: 2px;
+}
+
+/* PROFILE PICTURE */
+
+.picture-settings {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-top: 19px;
+    border-top: 1px solid var(--border);
+}
+
+.settings-avatar {
+    width: 78px;
+    height: 78px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--sage-light);
+    color: var(--sage-dark);
+    font-family: "Manrope", sans-serif;
+    font-size: 29px;
+    font-weight: 800;
+    border: 2px solid var(--border);
+}
+
+.settings-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.picture-settings-info {
+    min-width: 0;
+}
+
+.picture-settings-info h3 {
+    font-size: 14px;
+    margin-bottom: 6px;
+    overflow-wrap: anywhere;
+}
+
+.picture-settings-info > p {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-bottom: 13px;
+}
+
+.picture-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.settings-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: var(--sage-light);
+    color: var(--sage-dark);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.settings-secondary-btn:hover {
+    background: var(--sage-dark);
+    color: white;
+}
+
+.settings-text-btn {
+    padding: 9px 0;
+    background: transparent;
+    color: #A64B35;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.settings-text-btn:hover {
+    color: #7F3526;
+    text-decoration: underline;
+}
+
+/* FORM FIELDS */
+
+.password-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 19px;
+    padding-top: 19px;
+    border-top: 1px solid var(--border);
+}
+
+.settings-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+}
+
+.settings-field label {
+    color: var(--walnut);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.settings-field input {
+    width: 100%;
+    min-width: 0;
+    padding: 13px 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--ivory);
+    color: var(--walnut);
+    font-size: 13px;
+    outline: none;
+    transition: border 0.2s ease;
+}
+
+.settings-field input:focus {
+    border-color: var(--sage-dark);
+}
+
+.settings-field input::placeholder {
+    color: var(--muted);
+}
+
+.settings-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+
+.settings-primary-btn {
+    padding: 12px 22px;
+    background: var(--sage-dark);
+    color: white;
+    font-size: 13px;
+}
+
+.settings-primary-btn:hover {
+    background: var(--walnut);
+}
+
+.settings-primary-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* MESSAGES */
+
+.settings-message {
+    min-height: 20px;
+    margin-top: 13px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--sage-dark);
+}
+
+.settings-message.error {
+    color: #A64B35;
+}
+
+/* ACCOUNT INFORMATION */
+
+.account-information-list {
+    border-top: 1px solid var(--border);
+}
+
+.account-information-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 17px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.account-information-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.account-information-item span {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.account-information-item strong {
+    color: var(--walnut);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.account-information-item .account-active {
+    display: inline-block;
+    padding: 6px 11px;
+    border-radius: 7px;
+    background: var(--sage-light);
+    color: var(--sage-dark);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* LOGOUT */
+
+.logout-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.logout-panel h2 {
+    font-family: "Manrope", sans-serif;
+    font-size: 21px;
+    letter-spacing: -0.5px;
+    margin-bottom: 7px;
+}
+
+.logout-panel > div > p:last-child {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.settings-logout-btn {
+    flex-shrink: 0;
+    padding: 11px 17px;
+    background: #F8E8E2;
+    color: #A64B35;
+    font-size: 12px;
+}
+
+.settings-logout-btn:hover {
+    background: #A64B35;
+    color: white;
+}
+
+/* FOOTER */
+
+.settings-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 32px;
+    padding: 20px 0 5px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* TABLET */
+
+@media (max-width: 1100px) {
+    .settings-container {
+        padding: 32px 30px;
+    }
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+    .settings-container {
+        padding: 27px 20px 30px;
+    }
+
+    .settings-panel {
+        padding: 22px 19px;
+    }
+
+    .settings-panel-heading {
+        gap: 12px;
+    }
+
+    .settings-panel-icon {
+        width: 39px;
+        height: 39px;
+    }
+
+    .settings-control-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 13px;
+    }
+
+    .settings-select {
+        width: 100%;
+    }
+
+    .picture-settings {
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .settings-avatar {
+        width: 65px;
+        height: 65px;
+        font-size: 24px;
+    }
+
+    .password-form-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .settings-form-actions {
+        justify-content: stretch;
+    }
+
+    .settings-primary-btn {
+        width: 100%;
+    }
+
+    .logout-panel {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .settings-logout-btn {
+        width: 100%;
+    }
+
+    .settings-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        line-height: 1.6;
+    }
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 420px) {
+    .settings-container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .settings-panel {
+        padding: 19px 15px;
+    }
+
+    .picture-settings {
+        flex-direction: column;
+    }
+
+    .account-information-item {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .account-information-item strong {
+        text-align: left;
+    }
+
+    .picture-actions {
+        gap: 10px;
+    }
+}
+
+/* ========================================
+   MIDNIGHT FOREST THEME
+======================================== */
+
+body.dark-theme {
+    --ivory: #171B18;
+    --white: #252B26;
+    --walnut: #F5F1E8;
+    --muted: #B7BEB5;
+    --border: #414B40;
+    --sage: #78916F;
+    --sage-dark: #78916F;
+    --sage-light: #26352B;
+
+    background: #171B18;
+    color: #F5F1E8;
+    color-scheme: dark;
+}
+
+body.dark-theme .main-content {
+    background: #171B18;
+    color: #F5F1E8;
+}
+
+body.dark-theme .sidebar,
+body.dark-theme .topbar {
+    background: #202920;
+    color: #F5F1E8;
+    border-color: #414B40;
+}
+
+body.dark-theme .sidebar a,
+body.dark-theme .nav-link {
+    color: #D9DFD5;
+}
+
+body.dark-theme .nav-link:hover,
+body.dark-theme .nav-link.active {
+    background: #344536;
+    color: #FFFFFF;
+}
+
+body.dark-theme .settings-panel {
+    background: #252B26;
+    border-color: #414B40;
+    color: #F5F1E8;
+}
+
+body.dark-theme .settings-panel h2,
+body.dark-theme .settings-panel h3 {
+    color: #F5F1E8;
+}
+
+body.dark-theme .settings-panel p {
+    color: #B7BEB5;
+}
+
+body.dark-theme .section-eyebrow {
+    color: #AFC3A6;
+}
+
+body.dark-theme .settings-field label {
+    color: #E3E9DF;
+}
+
+body.dark-theme .settings-field input,
+body.dark-theme .settings-select {
+    background: #202920;
+    color: #F5F1E8;
+    border-color: #536052;
+}
+
+body.dark-theme .settings-field input::placeholder {
+    color: #A9B2A6;
+}
+
+body.dark-theme .settings-field input:focus,
+body.dark-theme .settings-select:focus {
+    border-color: #91A987;
+    outline: 2px solid rgba(120, 145, 111, 0.2);
+}
+
+body.dark-theme .settings-select option {
+    background: #202920;
+    color: #F5F1E8;
+}
+
+body.dark-theme .settings-panel-icon,
+body.dark-theme .settings-avatar {
+    background: #344536;
+    color: #C6D6BE;
+}
+
+body.dark-theme .settings-secondary-btn {
+    background: #344536;
+    color: #D9E7D2;
+}
+
+body.dark-theme .settings-secondary-btn:hover {
+    background: #78916F;
+    color: white;
+}
+
+body.dark-theme .settings-text-btn {
+    color: #E3B6A8;
+}
+
+body.dark-theme .settings-primary-btn {
+    background: #78916F;
+    color: white;
+}
+
+body.dark-theme .settings-primary-btn:hover {
+    background: #8BA481;
+}
+
+body.dark-theme .account-information-item {
+    border-color: #414B40;
+}
+
+body.dark-theme .account-information-item strong {
+    color: #F5F1E8;
+}
+
+body.dark-theme .account-information-item .account-active {
+    background: #344536;
+    color: #B8D5AE;
+}
+
+body.dark-theme .settings-message {
+    color: #B8D5AE;
+}
+
+body.dark-theme .settings-message.error {
+    color: #F2B7A9;
+}
+
+body.dark-theme .settings-logout-btn {
+    background: #49352F;
+    color: #E3C6A6;
+}
+
+body.dark-theme .settings-logout-btn:hover {
+    background: #A64B35;
+    color: white;
+}
+
+body.dark-theme .settings-footer {
+    color: #A9B2A6;
+    border-color: #414B40;
+}
+
+body.dark-theme .sidebar-overlay {
+    background: rgba(0, 0, 0, 0.65);
+}
+
+body.dark-theme button:focus-visible,
+body.dark-theme a:focus-visible,
+body.dark-theme label:focus-visible {
+    outline: 2px solid #AFC3A6;
+    outline-offset: 3px;
+}
+
+/* ========================================
+   TYPOGRAPHY — MATCH MY PROFILE PAGE
+======================================== */
+
+/* Main page heading */
+.settings-intro h1 {
+    font-family: "Manrope", sans-serif;
+    font-size: clamp(28px, 3vw, 36px);
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+/* Uppercase section labels */
+.settings-intro .section-eyebrow,
+.settings-panel .section-eyebrow,
+.logout-panel .section-eyebrow {
+    font-family: "DM Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+}
+
+/* Panel headings */
+.settings-panel-heading h2,
+.logout-panel h2 {
+    font-family: "Manrope", sans-serif;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--walnut);
+}
+
+/* Subheadings */
+.settings-control-info h3,
+.picture-settings-info h3 {
+    font-family: "Manrope", sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* Descriptions and body text */
+.settings-panel p,
+.settings-intro > div > p:last-child {
+    font-family: "DM Sans", sans-serif;
+    line-height: 1.6;
+}

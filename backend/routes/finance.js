@@ -243,7 +243,7 @@ async function loadGroupFinancialData(groupId) {
         }
     }
 
-    // Apply recorded settlements CORRECTLY.
+    // Apply recorded settlements.
     for (const settlement of settlementsResult.rows) {
         const payer = balances.get(settlement.paid_by);
         const receiver = balances.get(settlement.received_by);
@@ -251,12 +251,10 @@ async function loadGroupFinancialData(groupId) {
 
         if (amountPaise === null) continue;
 
-        // The payer's debt decreases.
         if (payer) {
             payer.balancePaise += amountPaise;
         }
 
-        // The receiver's credit decreases.
         if (receiver) {
             receiver.balancePaise -= amountPaise;
         }
@@ -497,7 +495,6 @@ router.get(
             let i = 0;
             let j = 0;
 
-            // Greedy debt simplification.
             while (i < debtors.length && j < creditors.length) {
                 const amountPaise = Math.min(
                     debtors[i].balancePaise,
@@ -625,5 +622,86 @@ router.post(
         }
     }
 );
+
+// ==========================================
+// GET SETTLEMENT HISTORY
+// GET /api/finance/settlements
+// GET /api/finance/settlements?groupId=4
+// ==========================================
+
+router.get("/settlements", async (req, res) => {
+    try {
+        const userId = Number(req.user.userId);
+        const groupId = req.query.groupId
+            ? Number(req.query.groupId)
+            : null;
+
+        if (
+            groupId !== null &&
+            (!Number.isInteger(groupId) || groupId <= 0)
+        ) {
+            return res.status(400).json({
+                status: "error",
+                message: "Invalid group ID."
+            });
+        }
+
+        const queryParams = [userId];
+        let groupFilter = "";
+
+        if (groupId !== null) {
+            if (!(await isGroupMember(groupId, userId))) {
+                return res.status(403).json({
+                    status: "error",
+                    message: "You are not a member of this group."
+                });
+            }
+
+            queryParams.push(groupId);
+            groupFilter = "AND s.group_id = $2";
+        }
+
+        const result = await pool.query(
+            `SELECT
+                s.id,
+                s.group_id AS "groupId",
+                g.name AS "groupName",
+                payer.id AS "paidByUserId",
+                payer.name AS "paidByName",
+                receiver.id AS "receivedByUserId",
+                receiver.name AS "receivedByName",
+                s.amount,
+                s.settlement_date AS "settlementDate",
+                s.created_at AS "createdAt"
+             FROM settlements s
+             JOIN groups g ON g.id = s.group_id
+             JOIN users payer ON payer.id = s.paid_by
+             JOIN users receiver ON receiver.id = s.received_by
+             WHERE EXISTS (
+                SELECT 1
+                FROM group_members gm
+                WHERE gm.group_id = s.group_id
+                AND gm.user_id = $1
+             )
+             ${groupFilter}
+             ORDER BY s.created_at DESC, s.id DESC`,
+            queryParams
+        );
+
+        return res.status(200).json({
+            status: "success",
+            count: result.rows.length,
+            settlements: result.rows
+        });
+
+    } catch (error) {
+        console.error("Settlement history error:", error.message);
+
+        return res.status(500).json({
+            status: "error",
+            message: "Unable to load settlement history."
+        });
+    }
+});
 
 module.exports = router;

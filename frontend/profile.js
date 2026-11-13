@@ -1,418 +1,447 @@
 
-// ==========================================
-// SPLIARA - USER PROFILE
-// ==========================================
-
 const API_URL = "/api";
 const token = sessionStorage.getItem("spliaraToken");
 
-const DEFAULT_PROFILE_IMAGE =
-    "https://placehold.co/160x160?text=Profile";
-
-const DEFAULT_PREVIEW_IMAGE =
-    "https://placehold.co/100x100?text=Photo";
-
-let currentUser = null;
-let selectedPicture = null;
-let previewObjectUrl = null;
-
 // ==========================================
-// AUTHENTICATION CHECK
-// ==========================================
-
-if (!token) {
-    window.location.href = "/";
-}
-
-// ==========================================
-// ELEMENTS
+// DOM ELEMENTS
 // ==========================================
 
 const profileForm = document.getElementById("profileForm");
-const passwordForm = document.getElementById("passwordForm");
+const profileName = document.getElementById("profileName");
+const profileEmail = document.getElementById("profileEmail");
 
-const fullNameInput = document.getElementById("fullName");
-const emailInput = document.getElementById("emailAddress");
+const profileDisplayName = document.getElementById("profileDisplayName");
+const profileDisplayEmail = document.getElementById("profileDisplayEmail");
+const profileAvatar = document.getElementById("profileAvatar");
 
-const profileImage = document.getElementById("profileImage");
-const picturePreview = document.getElementById("picturePreview");
-const pictureInput = document.getElementById("profilePictureInput");
-
-const choosePictureBtn = document.getElementById("choosePictureBtn");
-const removePictureBtn = document.getElementById("removePictureBtn");
-
+const welcomeUser = document.getElementById("welcomeUser");
 const profileMessage = document.getElementById("profileMessage");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+
+const memberAccountName = document.getElementById("memberAccountName");
+const memberAccountEmail = document.getElementById("memberAccountEmail");
+const profileMemberSince = document.getElementById("profileMemberSince");
 
 // ==========================================
-// API REQUEST FUNCTION
+// AUTHENTICATION
 // ==========================================
 
-async function apiRequest(endpoint, options = {}) {
-    const headers = {
-        Authorization: `Bearer ${token}`,
-        ...options.headers
+if (!token) {
+    window.location.href = "index.html";
+}
+
+function getHeaders() {
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
     };
-
-    if (options.body && !(options.body instanceof FormData)) {
-        headers["Content-Type"] = "application/json";
-    }
-
-    const response = await fetch(`${API_URL}${endpoint}`, {
-        ...options,
-        headers
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-            sessionStorage.removeItem("spliaraToken");
-            window.location.href = "/";
-        }
-
-        throw new Error(data.message || "Something went wrong.");
-    }
-
-    return data;
 }
 
 // ==========================================
-// MESSAGE DISPLAY
+// PROFILE MESSAGES
 // ==========================================
 
-function showProfileMessage(message, type = "success") {
+function showMessage(message, type = "success") {
+    if (!profileMessage) return;
+
     profileMessage.textContent = message;
-    profileMessage.className = `profile-message ${type}`;
+    profileMessage.className = "profile-message";
 
-    window.setTimeout(() => {
-        profileMessage.textContent = "";
-        profileMessage.className = "profile-message";
-    }, 4000);
+    if (type === "error") {
+        profileMessage.classList.add("error");
+    }
 }
 
 // ==========================================
-// PROFILE PICTURE DISPLAY
+// FORMAT MEMBERSHIP DATE
 // ==========================================
 
-function updatePictureDisplay(pictureUrl) {
-    if (previewObjectUrl) {
-        URL.revokeObjectURL(previewObjectUrl);
-        previewObjectUrl = null;
+function formatMemberDate(dateValue) {
+    if (!dateValue) return "Not available";
+
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Not available";
     }
 
-    if (pictureUrl) {
-        const imageUrl = pictureUrl.startsWith("http")
-            ? pictureUrl
-            : `${window.location.origin}${pictureUrl}`;
-
-        profileImage.src = imageUrl;
-        picturePreview.src = imageUrl;
-    } else {
-        profileImage.src = DEFAULT_PROFILE_IMAGE;
-        picturePreview.src = DEFAULT_PREVIEW_IMAGE;
-    }
-
-    profileImage.onerror = () => {
-        profileImage.src = DEFAULT_PROFILE_IMAGE;
-    };
-
-    picturePreview.onerror = () => {
-        picturePreview.src = DEFAULT_PREVIEW_IMAGE;
-    };
+    return date.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
 }
 
 // ==========================================
-// LOAD USER PROFILE
+// LOAD PROFILE
 // ==========================================
 
 async function loadProfile() {
     try {
-        const data = await apiRequest("/auth/profile");
+        const response = await fetch(`${API_URL}/auth/profile`, {
+            method: "GET",
+            headers: getHeaders()
+        });
 
-        currentUser = data.user;
+        const data = await response.json();
 
-        fullNameInput.value = currentUser.name || "";
-        emailInput.value = currentUser.email || "";
-
-        document.getElementById("profileDisplayName").textContent =
-            currentUser.name || "Spliara Member";
-
-        document.getElementById("profileDisplayEmail").textContent =
-            currentUser.email || "";
-
-        document.getElementById("accountId").textContent =
-            currentUser.id ?? "—";
-
-        if (currentUser.created_at) {
-            const date = new Date(currentUser.created_at);
-
-            document.getElementById("memberSince").textContent =
-                date.toLocaleDateString("en-IN", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric"
-                });
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            return;
         }
 
-        updatePictureDisplay(currentUser.profile_picture_url);
+        if (!response.ok) {
+            throw new Error(data.message || "Could not load profile.");
+        }
+
+        displayProfile(data.user);
 
     } catch (error) {
-        showProfileMessage(error.message, "error");
+        console.error("Profile loading error:", error);
+        showMessage(error.message, "error");
     }
 }
 
 // ==========================================
-// CANCEL PROFILE CHANGES
+// DISPLAY PROFILE
 // ==========================================
 
-profileForm.addEventListener("reset", () => {
-    window.setTimeout(() => {
-        if (currentUser) {
-            fullNameInput.value = currentUser.name || "";
-            emailInput.value = currentUser.email || "";
+function displayProfile(user) {
+    if (!user) return;
+
+    const name = user.name || "Spliara Member";
+    const email = user.email || "";
+
+    if (profileName) {
+        profileName.value = name;
+    }
+
+    if (profileEmail) {
+        profileEmail.value = email;
+    }
+
+    if (profileDisplayName) {
+        profileDisplayName.textContent = name;
+    }
+
+    if (profileDisplayEmail) {
+        profileDisplayEmail.textContent = email;
+    }
+
+    if (welcomeUser) {
+        welcomeUser.textContent = `Welcome, ${name}!`;
+    }
+
+    if (memberAccountName) {
+        memberAccountName.textContent = name;
+    }
+
+    if (memberAccountEmail) {
+        memberAccountEmail.textContent = email;
+    }
+
+    if (profileMemberSince) {
+        profileMemberSince.textContent =
+            formatMemberDate(user.created_at);
+    }
+
+    // PROFILE AVATAR
+
+    if (profileAvatar) {
+        const firstLetter = name.trim().charAt(0).toUpperCase() || "U";
+
+        profileAvatar.textContent = firstLetter;
+
+        if (user.profile_picture_url) {
+            const image = document.createElement("img");
+
+            image.src = user.profile_picture_url;
+            image.alt = "Profile picture";
+            image.style.width = "100%";
+            image.style.height = "100%";
+            image.style.objectFit = "cover";
+            image.style.borderRadius = "50%";
+
+            image.onerror = () => {
+                profileAvatar.textContent = firstLetter;
+            };
+
+            profileAvatar.textContent = "";
+            profileAvatar.appendChild(image);
         }
-    }, 0);
-});
-
-// ==========================================
-// UPDATE PERSONAL INFORMATION
-// ==========================================
-
-profileForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const name = fullNameInput.value.trim();
-    const email = emailInput.value.trim();
-
-    if (name.length < 2) {
-        showProfileMessage(
-            "Name must contain at least 2 characters.",
-            "error"
-        );
-        return;
-    }
-
-    try {
-        const data = await apiRequest("/auth/profile", {
-            method: "PUT",
-            body: JSON.stringify({ name, email })
-        });
-
-        currentUser = {
-            ...currentUser,
-            ...data.user
-        };
-
-        document.getElementById("profileDisplayName").textContent =
-            currentUser.name;
-
-        document.getElementById("profileDisplayEmail").textContent =
-            currentUser.email;
-
-        fullNameInput.value = currentUser.name;
-        emailInput.value = currentUser.email;
-
-        showProfileMessage(data.message);
-
-    } catch (error) {
-        showProfileMessage(error.message, "error");
-    }
-});
-
-// ==========================================
-// SELECT PROFILE PICTURE
-// ==========================================
-
-choosePictureBtn.addEventListener("click", () => {
-    if (selectedPicture) {
-        uploadProfilePicture();
-    } else {
-        pictureInput.click();
-    }
-});
-
-pictureInput.addEventListener("change", () => {
-    const file = pictureInput.files[0];
-
-    if (!file) return;
-
-    const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp"
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-        showProfileMessage(
-            "Please select a JPG, PNG or WebP image.",
-            "error"
-        );
-
-        pictureInput.value = "";
-        return;
-    }
-
-    if (file.size > 2 * 1024 * 1024) {
-        showProfileMessage(
-            "Image must be smaller than 2 MB.",
-            "error"
-        );
-
-        pictureInput.value = "";
-        return;
-    }
-
-    selectedPicture = file;
-
-    if (previewObjectUrl) {
-        URL.revokeObjectURL(previewObjectUrl);
-    }
-
-    previewObjectUrl = URL.createObjectURL(file);
-
-    profileImage.src = previewObjectUrl;
-    picturePreview.src = previewObjectUrl;
-
-    showProfileMessage(
-        "Picture selected. Click Choose Picture again to upload."
-    );
-});
-
-// ==========================================
-// UPLOAD PROFILE PICTURE
-// ==========================================
-
-async function uploadProfilePicture() {
-    if (!selectedPicture) {
-        pictureInput.click();
-        return;
-    }
-
-    const formData = new FormData();
-
-    formData.append("profilePicture", selectedPicture);
-
-    try {
-        choosePictureBtn.disabled = true;
-
-        const data = await apiRequest("/auth/profile-picture", {
-            method: "POST",
-            body: formData
-        });
-
-        currentUser = {
-            ...currentUser,
-            ...data.user
-        };
-
-        selectedPicture = null;
-        pictureInput.value = "";
-
-        updatePictureDisplay(currentUser.profile_picture_url);
-
-        showProfileMessage(data.message);
-
-    } catch (error) {
-        showProfileMessage(error.message, "error");
-
-    } finally {
-        choosePictureBtn.disabled = false;
     }
 }
 
 // ==========================================
-// REMOVE PROFILE PICTURE
+// UPDATE PROFILE
 // ==========================================
 
-removePictureBtn.addEventListener("click", async () => {
-    try {
-        removePictureBtn.disabled = true;
+if (profileForm) {
+    profileForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-        const data = await apiRequest("/auth/profile-picture", {
-            method: "DELETE"
-        });
+        const name = profileName.value.trim();
+        const email = profileEmail.value.trim();
 
-        currentUser = {
-            ...currentUser,
-            ...data.user
-        };
+        if (name.length < 2 || name.length > 100) {
+            showMessage(
+                "Name must contain between 2 and 100 characters.",
+                "error"
+            );
+            return;
+        }
 
-        selectedPicture = null;
-        pictureInput.value = "";
+        if (saveProfileBtn) {
+            saveProfileBtn.disabled = true;
+            saveProfileBtn.textContent = "Saving...";
+        }
 
-        updatePictureDisplay(null);
+        try {
+            const response = await fetch(`${API_URL}/auth/profile`, {
+                method: "PUT",
+                headers: getHeaders(),
+                body: JSON.stringify({ name, email })
+            });
 
-        showProfileMessage(data.message);
+            const data = await response.json();
 
-    } catch (error) {
-        showProfileMessage(error.message, "error");
+            if (response.status === 401 || response.status === 403) {
+                logout();
+                return;
+            }
 
-    } finally {
-        removePictureBtn.disabled = false;
-    }
-});
+            if (!response.ok) {
+                throw new Error(data.message || "Could not update profile.");
+            }
+
+            displayProfile(data.user);
+
+            showMessage("Your profile has been updated successfully!");
+
+        } catch (error) {
+            console.error("Profile update error:", error);
+            showMessage(error.message, "error");
+
+        } finally {
+            if (saveProfileBtn) {
+                saveProfileBtn.disabled = false;
+                saveProfileBtn.textContent = "Save Changes";
+            }
+        }
+    });
+}
 
 // ==========================================
-// CHANGE PASSWORD
+// MIDNIGHT FOREST THEME
+// Reads the theme selected in Settings
 // ==========================================
 
-passwordForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+const darkThemeStyles = document.createElement("style");
 
-    const currentPassword =
-        document.getElementById("currentPassword").value;
+darkThemeStyles.textContent = `
 
-    const newPassword =
-        document.getElementById("newPassword").value;
+    body.dark-theme {
+        --ivory: #171B18;
+        --white: #252B26;
+        --walnut: #F5F1E8;
+        --muted: #B7BEB5;
+        --border: #414B40;
+        --sage: #78916F;
+        --sage-dark: #607858;
+        --sage-light: #26352B;
 
-    const confirmPassword =
-        document.getElementById("confirmPassword").value;
-
-    if (newPassword.length < 8) {
-        showProfileMessage(
-            "New password must be at least 8 characters.",
-            "error"
-        );
-        return;
+        background: #171B18;
+        color: #F5F1E8;
+        color-scheme: dark;
     }
 
-    if (newPassword !== confirmPassword) {
-        showProfileMessage(
-            "New passwords do not match.",
-            "error"
-        );
-        return;
+    body.dark-theme .main-content {
+        background: #171B18;
+        color: #F5F1E8;
     }
 
-    try {
-        const data = await apiRequest("/auth/change-password", {
-            method: "PUT",
-            body: JSON.stringify({
-                currentPassword,
-                newPassword
-            })
-        });
-
-        passwordForm.reset();
-
-        showProfileMessage(data.message);
-
-    } catch (error) {
-        showProfileMessage(error.message, "error");
+    body.dark-theme .sidebar,
+    body.dark-theme .topbar {
+        background: #202920;
+        color: #F5F1E8;
+        border-color: #414B40;
     }
-});
+
+    body.dark-theme .sidebar a,
+    body.dark-theme .nav-link {
+        color: #D9DFD5;
+    }
+
+    body.dark-theme .nav-link:hover,
+    body.dark-theme .nav-link.active {
+        background: #344536;
+        color: #FFFFFF;
+    }
+
+    body.dark-theme .profile-container {
+        color: #F5F1E8;
+    }
+
+    body.dark-theme .profile-overview,
+    body.dark-theme .profile-panel {
+        background: #252B26;
+        border: 1px solid #414B40;
+        color: #F5F1E8;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+    }
+
+    body.dark-theme h1,
+    body.dark-theme h2,
+    body.dark-theme h3 {
+        color: #F5F1E8;
+    }
+
+    body.dark-theme p,
+    body.dark-theme .profile-intro {
+        color: #B7BEB5;
+    }
+
+    body.dark-theme .section-eyebrow {
+        color: #AFC3A6;
+    }
+
+    body.dark-theme .profile-field label {
+        color: #E3E9DF;
+    }
+
+    body.dark-theme .profile-field input {
+        background: #202920;
+        color: #F5F1E8;
+        border: 1px solid #536052;
+    }
+
+    body.dark-theme .profile-field input:focus {
+        border-color: #91A987;
+        outline: 2px solid rgba(120, 145, 111, 0.2);
+    }
+
+    body.dark-theme .profile-field input:disabled {
+        color: #B7BEB5;
+        opacity: 1;
+    }
+
+    body.dark-theme .profile-primary-btn {
+        background: #78916F;
+        color: #FFFFFF;
+        border: none;
+    }
+
+    body.dark-theme .profile-primary-btn:hover {
+        background: #8BA481;
+    }
+
+    body.dark-theme .profile-avatar {
+        background: #344B37;
+        color: #F5F1E8;
+    }
+
+    body.dark-theme .settings-item {
+        border-color: #414B40;
+    }
+
+    body.dark-theme .settings-item-icon {
+        background: #344536;
+        color: #C6D6BE;
+    }
+
+    body.dark-theme .settings-status {
+        color: #B8C9B1;
+    }
+
+    body.dark-theme .profile-message {
+        color: #B8D5AE;
+    }
+
+    body.dark-theme .profile-message.error {
+        color: #F2B7A9;
+    }
+
+    body.dark-theme .profile-footer {
+        color: #A9B2A6;
+        border-color: #414B40;
+    }
+
+    body.dark-theme .sidebar-overlay {
+        background: rgba(0, 0, 0, 0.65);
+    }
+
+    body.dark-theme button:focus-visible,
+    body.dark-theme a:focus-visible {
+        outline: 2px solid #AFC3A6;
+        outline-offset: 3px;
+    }
+`;
+
+document.head.appendChild(darkThemeStyles);
+
+// Apply previously selected theme
+
+const savedTheme = localStorage.getItem("spliaraTheme") || "light";
+
+document.body.classList.toggle(
+    "dark-theme",
+    savedTheme === "dark"
+);
 
 // ==========================================
 // LOGOUT
 // ==========================================
 
-document.getElementById("logoutBtn").addEventListener("click", () => {
+function logout() {
     sessionStorage.removeItem("spliaraToken");
-    window.location.href = "/";
-});
+    window.location.href = "index.html";
+}
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", logout);
+}
 
 // ==========================================
-// INITIALIZE PROFILE PAGE
+// MOBILE SIDEBAR
 // ==========================================
 
-loadProfile();
+const sidebar = document.getElementById("sidebar");
+const menuToggle = document.getElementById("menuToggle");
+const sidebarCloseBtn = document.getElementById("sidebarCloseBtn");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+function openSidebar() {
+    if (!sidebar || !sidebarOverlay) return;
+
+    sidebar.classList.add("open");
+    sidebarOverlay.classList.add("active");
+}
+
+function closeSidebar() {
+    if (!sidebar || !sidebarOverlay) return;
+
+    sidebar.classList.remove("open");
+    sidebarOverlay.classList.remove("active");
+}
+
+if (menuToggle) {
+    menuToggle.addEventListener("click", openSidebar);
+}
+
+if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener("click", closeSidebar);
+}
+
+if (sidebarOverlay) {
+    sidebarOverlay.addEventListener("click", closeSidebar);
+}
+
+// ==========================================
+// INITIALIZE
+// ==========================================
+
+if (token) {
+    loadProfile();
+}
