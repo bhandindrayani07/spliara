@@ -556,8 +556,13 @@ async function initializeBalancesPage() {
     try {
         showMessage("Loading your balances...");
 
-        await loadProfile();
-        await loadGroups();
+        // Load profile and groups simultaneously.
+        await Promise.all([
+            loadProfile(),
+            loadGroups()
+        ]);
+
+        // Load balances after groups are available.
         await loadAllBalances();
 
         updateSummary();
@@ -567,7 +572,9 @@ async function initializeBalancesPage() {
             showMessage(
                 "No balances to display yet. Add expenses to your groups to get started."
             );
-        } else if (!messageElement.textContent.includes("Some group balances")) {
+        } else if (
+            !messageElement?.textContent.includes("Some group balances")
+        ) {
             showMessage("");
         }
 

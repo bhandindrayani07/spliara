@@ -691,8 +691,23 @@ async function initializeAnalytics() {
     }
 
     try {
-        await loadUser();
-        await loadGroups();
+        // Load profile and groups simultaneously
+        const results = await Promise.allSettled([
+            loadUser(),
+            loadGroups()
+        ]);
+
+        // Profile failure should not stop analytics
+        if (results[0].status === "rejected") {
+            console.error("Profile loading error:", results[0].reason);
+        }
+
+        // Groups are required to load expenses
+        if (results[1].status === "rejected") {
+            throw results[1].reason;
+        }
+
+        // Load expenses after groups are available
         await loadExpenses();
 
         renderAnalytics();

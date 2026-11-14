@@ -227,6 +227,7 @@ async function loadGroups() {
 
 // ==========================================
 // LOAD FINANCIAL DATA FOR EACH GROUP
+// ONE REQUEST PER GROUP
 // ==========================================
 
 async function loadGroupFinancialData() {
@@ -235,16 +236,15 @@ async function loadGroupFinancialData() {
 
     const results = await Promise.allSettled(
         groups.map(async group => {
-            const [balanceData, debtData] = await Promise.all([
-                apiRequest(`/finance/groups/${group.id}/balances`),
-                apiRequest(`/finance/groups/${group.id}/simplified-debts`)
-            ]);
+            const balanceData = await apiRequest(
+                `/finance/groups/${group.id}/balances`
+            );
 
             return {
                 groupId: Number(group.id),
                 groupName: getGroupName(group),
                 balances: balanceData.balances || [],
-                transactions: debtData.transactions || []
+                transactions: balanceData.transactions || []
             };
         })
     );
@@ -422,7 +422,6 @@ function updateReceiverOptions() {
         return;
     }
 
-    // Get the selected group's already-loaded balance data.
     const selectedGroup = groupFinancialData.find(groupData =>
         Number(groupData.groupId) === groupId
     );
@@ -440,7 +439,6 @@ function updateReceiverOptions() {
         return;
     }
 
-    // Get all other members from the balances API.
     const otherMembers = selectedGroup.balances.filter(member =>
         Number(member.userId) !== currentUserId
     );
@@ -465,7 +463,6 @@ function updateReceiverOptions() {
     elements.settlementReceiver.disabled = false;
 }
 
-// Listen for group selection.
 elements.settlementGroup.addEventListener(
     "change",
     updateReceiverOptions
@@ -485,7 +482,6 @@ elements.settlementReceiver.addEventListener("change", () => {
         return;
     }
 
-    // Find the outstanding debt to the selected member.
     const matchingSuggestions = selectedGroupSuggestions.filter(
         transaction => Number(transaction.to.userId) === receiverId
     );
@@ -569,7 +565,6 @@ elements.settlementForm.addEventListener("submit", async event => {
         return;
     }
 
-    // Confirm the selected member has an outstanding debt.
     const matchingSuggestions = selectedGroupSuggestions.filter(
         transaction => Number(transaction.to.userId) === receivedBy
     );
@@ -750,12 +745,15 @@ elements.historyGroupFilter.addEventListener(
 // ==========================================
 
 async function refreshSettlementData() {
-    await loadGroupFinancialData();
+    // Financial data and settlement history are independent.
+    // Load them simultaneously instead of waiting for each one.
+    await Promise.all([
+        loadGroupFinancialData(),
+        loadSettlementHistory()
+    ]);
 
     updateSummary();
     renderSuggestions();
-
-    await loadSettlementHistory();
 }
 
 // ==========================================
@@ -769,8 +767,14 @@ async function initializeSettlementsPage() {
     }
 
     try {
-        await loadUserProfile();
-        await loadGroups();
+        // Profile and groups do not depend on each other.
+        // Start both requests simultaneously.
+        await Promise.all([
+            loadUserProfile(),
+            loadGroups()
+        ]);
+
+        // Load financial data and history simultaneously.
         await refreshSettlementData();
 
     } catch (error) {

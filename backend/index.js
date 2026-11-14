@@ -1,7 +1,16 @@
 
 const express = require("express");
 const path = require("path");
-require("dotenv").config();
+
+// Load Neon environment variables first
+require("dotenv").config({
+    path: path.resolve(__dirname, "../.env.local")
+});
+
+// Load local backend environment variables as fallback
+require("dotenv").config({
+    path: path.resolve(__dirname, ".env")
+});
 
 const pool = require("./config/db");
 const authRoutes = require("./routes/auth");
@@ -17,6 +26,7 @@ const PORT = process.env.PORT || 3000;
 // ==========================================
 
 app.use(express.json());
+
 // TEMPORARY: Log incoming API requests
 app.use((req, res, next) => {
     console.log("INCOMING REQUEST:", req.method, req.originalUrl);
@@ -83,8 +93,8 @@ app.get("/health", async (req, res) => {
 // START SERVER
 // ==========================================
 
-const server = app.listen(PORT, () => {
-    console.log(`Spliara backend running at http://localhost:${PORT}`);
+const server = app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Spliara backend running on port ${PORT}`);
 });
 
 // Detect if server closes

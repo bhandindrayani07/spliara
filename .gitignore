@@ -1,2 +1,18 @@
-
 .DS_Store
+
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+
+# Neon CLI
+.neon
+
+# Uploaded profile pictures
+backend/uploads/profiles/*
+!backend/uploads/profiles/.gitkeep

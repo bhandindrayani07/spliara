@@ -43,7 +43,6 @@ if (!token) {
 async function apiRequest(endpoint) {
     const response = await fetch(`${API_URL}${endpoint}`, {
         method: "GET",
-
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -624,8 +623,26 @@ async function initializeExpensesPage() {
     try {
         showMessage("Loading your expenses...");
 
-        await loadProfile();
-        await loadGroups();
+        // Load profile and groups simultaneously
+        const results = await Promise.allSettled([
+            loadProfile(),
+            loadGroups()
+        ]);
+
+        // Handle profile loading failure
+        if (results[0].status === "rejected") {
+            console.error(
+                "Profile loading error:",
+                results[0].reason
+            );
+        }
+
+        // Groups are required for loading expenses
+        if (results[1].status === "rejected") {
+            throw results[1].reason;
+        }
+
+        // Load expenses after groups are available
         await loadAllExpenses();
 
         updateSummary();

@@ -165,17 +165,112 @@ function calculateSplits(totalPaise, splitType, splits) {
 }
 
 // ==========================================
+// SIMPLIFY DEBTS USING GREEDY ALGORITHM
+// ==========================================
+
+function simplifyDebts(balances) {
+    const creditors = [];
+    const debtors = [];
+
+    for (const member of balances.values()) {
+        if (member.balancePaise > 0) {
+            creditors.push({ ...member });
+        } else if (member.balancePaise < 0) {
+            debtors.push({
+                ...member,
+                balancePaise: Math.abs(member.balancePaise)
+            });
+        }
+    }
+
+    creditors.sort(
+        (a, b) => b.balancePaise - a.balancePaise
+    );
+
+    debtors.sort(
+        (a, b) => b.balancePaise - a.balancePaise
+    );
+
+    const transactions = [];
+
+    let i = 0;
+    let j = 0;
+
+    while (i < debtors.length && j < creditors.length) {
+        const amountPaise = Math.min(
+            debtors[i].balancePaise,
+            creditors[j].balancePaise
+        );
+
+        if (amountPaise > 0) {
+            transactions.push({
+                from: {
+                    userId: debtors[i].userId,
+                    name: debtors[i].name
+                },
+                to: {
+                    userId: creditors[j].userId,
+                    name: creditors[j].name
+                },
+                amount: fromPaise(amountPaise)
+            });
+        }
+
+        debtors[i].balancePaise -= amountPaise;
+        creditors[j].balancePaise -= amountPaise;
+
+        if (debtors[i].balancePaise === 0) {
+            i++;
+        }
+
+        if (creditors[j].balancePaise === 0) {
+            j++;
+        }
+    }
+
+    return transactions;
+}
+
+// ==========================================
 // LOAD GROUP FINANCIAL DATA
 // ==========================================
 
 async function loadGroupFinancialData(groupId) {
+
+    async function timedQuery(label, sql, params) {
+        const start = Date.now();
+
+        try {
+            const result = await pool.query(sql, params);
+
+            console.log(
+                `${label}:`,
+                Date.now() - start,
+                "ms"
+            );
+
+            return result;
+
+        } catch (error) {
+            console.error(
+                `${label} failed after`,
+                Date.now() - start,
+                "ms"
+            );
+
+            throw error;
+        }
+    }
+
     const [
         membersResult,
         expensesResult,
         splitsResult,
         settlementsResult
     ] = await Promise.all([
-        pool.query(
+
+        timedQuery(
+            "Members query",
             `SELECT u.id, u.name, u.email
              FROM group_members gm
              JOIN users u ON u.id = gm.user_id
@@ -183,7 +278,8 @@ async function loadGroupFinancialData(groupId) {
             [groupId]
         ),
 
-        pool.query(
+        timedQuery(
+            "Expenses query",
             `SELECT e.id, e.paid_by, e.amount
              FROM expenses e
              WHERE e.group_id = $1
@@ -195,7 +291,8 @@ async function loadGroupFinancialData(groupId) {
             [groupId]
         ),
 
-        pool.query(
+        timedQuery(
+            "Expense splits query",
             `SELECT es.expense_id, es.user_id, es.share_amount
              FROM expense_splits es
              JOIN expenses e ON e.id = es.expense_id
@@ -203,7 +300,8 @@ async function loadGroupFinancialData(groupId) {
             [groupId]
         ),
 
-        pool.query(
+        timedQuery(
+            "Settlements query",
             `SELECT paid_by, received_by, amount
              FROM settlements
              WHERE group_id = $1`,
@@ -387,7 +485,7 @@ router.post("/groups/:groupId/expenses", async (req, res) => {
 });
 
 // ==========================================
-// GET MEMBER BALANCES
+// GET MEMBER BALANCES + SIMPLIFIED DEBTS
 // GET /api/finance/groups/:groupId/balances
 // ==========================================
 
@@ -425,9 +523,14 @@ router.get("/groups/:groupId/balances", async (req, res) => {
                         : "settled"
         }));
 
+        // Generate simplified debts using the same balance data.
+        const transactions = simplifyDebts(balances);
+
         return res.status(200).json({
             status: "success",
-            balances: result
+            balances: result,
+            transactionCount: transactions.length,
+            transactions
         });
 
     } catch (error) {
@@ -441,13 +544,17 @@ router.get("/groups/:groupId/balances", async (req, res) => {
 });
 
 // ==========================================
-// SIMPLIFY DEBTS USING GREEDY ALGORITHM
+// SIMPLIFIED DEBTS
 // GET /api/finance/groups/:groupId/simplified-debts
 // ==========================================
 
 router.get(
     "/groups/:groupId/simplified-debts",
     async (req, res) => {
+        const requestStart = Date.now();
+
+        console.log("\n--- SIMPLIFIED DEBTS TIMING ---");
+
         try {
             const groupId = Number(req.params.groupId);
             const userId = Number(req.user.userId);
@@ -459,73 +566,46 @@ router.get(
                 });
             }
 
-            if (!(await isGroupMember(groupId, userId))) {
+            const membershipStart = Date.now();
+
+            const isMember = await isGroupMember(
+                groupId,
+                userId
+            );
+
+            console.log(
+                "Membership check:",
+                Date.now() - membershipStart,
+                "ms"
+            );
+
+            if (!isMember) {
                 return res.status(403).json({
                     status: "error",
                     message: "You are not a member of this group."
                 });
             }
 
+            const financialDataStart = Date.now();
+
             const balances = await loadGroupFinancialData(groupId);
 
-            const creditors = [];
-            const debtors = [];
-
-            for (const member of balances.values()) {
-                if (member.balancePaise > 0) {
-                    creditors.push({ ...member });
-                } else if (member.balancePaise < 0) {
-                    debtors.push({
-                        ...member,
-                        balancePaise: Math.abs(member.balancePaise)
-                    });
-                }
-            }
-
-            creditors.sort(
-                (a, b) => b.balancePaise - a.balancePaise
+            console.log(
+                "Financial data loading:",
+                Date.now() - financialDataStart,
+                "ms"
             );
 
-            debtors.sort(
-                (a, b) => b.balancePaise - a.balancePaise
+            // Use the shared debt simplification helper.
+            const transactions = simplifyDebts(balances);
+
+            console.log(
+                "Total backend processing:",
+                Date.now() - requestStart,
+                "ms"
             );
 
-            const transactions = [];
-
-            let i = 0;
-            let j = 0;
-
-            while (i < debtors.length && j < creditors.length) {
-                const amountPaise = Math.min(
-                    debtors[i].balancePaise,
-                    creditors[j].balancePaise
-                );
-
-                if (amountPaise > 0) {
-                    transactions.push({
-                        from: {
-                            userId: debtors[i].userId,
-                            name: debtors[i].name
-                        },
-                        to: {
-                            userId: creditors[j].userId,
-                            name: creditors[j].name
-                        },
-                        amount: fromPaise(amountPaise)
-                    });
-                }
-
-                debtors[i].balancePaise -= amountPaise;
-                creditors[j].balancePaise -= amountPaise;
-
-                if (debtors[i].balancePaise === 0) {
-                    i++;
-                }
-
-                if (creditors[j].balancePaise === 0) {
-                    j++;
-                }
-            }
+            console.log("--- END TIMING ---\n");
 
             return res.status(200).json({
                 status: "success",
@@ -536,6 +616,12 @@ router.get(
 
         } catch (error) {
             console.error("Debt simplification error:", error.message);
+
+            console.log(
+                "Failed request duration:",
+                Date.now() - requestStart,
+                "ms"
+            );
 
             return res.status(500).json({
                 status: "error",

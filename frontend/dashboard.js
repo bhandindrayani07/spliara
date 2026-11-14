@@ -501,17 +501,41 @@ if (sidebarOverlay) {
 }
 
 // ========================================
-// INITIALIZE DASHBOARD
+// INITIALIZE DASHBOARD - OPTIMIZED
 // ========================================
 
 async function initializeDashboard() {
     if (!token) return;
 
     try {
-        await loadProfile();
+        // Profile and groups do not depend on each other.
+        // Load both at the same time.
+        const [profileResult, groupsResult] = await Promise.allSettled([
+            loadProfile(),
+            loadGroups()
+        ]);
 
-        const groups = await loadGroups();
+        // Handle profile errors without blocking the dashboard.
+        if (profileResult.status === "rejected") {
+            console.error(
+                "Dashboard profile loading error:",
+                profileResult.reason
+            );
 
+            showMessage(
+                "Your profile information could not be loaded.",
+                "error"
+            );
+        }
+
+        // Groups are required before we can load group expenses.
+        if (groupsResult.status === "rejected") {
+            throw groupsResult.reason;
+        }
+
+        const groups = groupsResult.value;
+
+        // Expenses still need the groups list first.
         const expenses = await loadAllExpenses(groups);
 
         updateSpendingOverview(expenses);

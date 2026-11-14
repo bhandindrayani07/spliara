@@ -201,15 +201,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadGroupWorkspace() {
     try {
+        // Load group details and members simultaneously
         await Promise.all([
             loadGroup(),
             loadMembers()
         ]);
 
+        // Load independent workspace sections simultaneously.
+        // Balances also provide the suggested debt transactions.
         await Promise.all([
             loadExpenses(),
             loadBalances(),
-            loadSuggestedDebts(),
             loadInvitations()
         ]);
 
@@ -536,8 +538,6 @@ function setupMemberForm() {
                     loadInvitations(),
                     loadBalances()
                 ]);
-
-                await loadSuggestedDebts();
 
                 updateSummary();
                 renderSettlementForm();
@@ -1002,7 +1002,7 @@ async function deleteExpense(expenseId) {
 }
 
 // ==========================================
-// BALANCES
+// BALANCES AND SIMPLIFIED DEBTS
 // ==========================================
 
 async function loadBalances() {
@@ -1010,9 +1010,12 @@ async function loadBalances() {
         `/finance/groups/${groupId}/balances`
     );
 
+    // Both balances and suggested debts come from this response.
     groupBalances = data.balances || [];
+    suggestedDebts = data.transactions || [];
 
     renderBalances();
+    renderSuggestedDebts();
 }
 
 function renderBalances() {
@@ -1056,16 +1059,6 @@ function renderBalances() {
 // ==========================================
 // SIMPLIFIED DEBTS
 // ==========================================
-
-async function loadSuggestedDebts() {
-    const data = await apiRequest(
-        `/finance/groups/${groupId}/simplified-debts`
-    );
-
-    suggestedDebts = data.transactions || [];
-
-    renderSuggestedDebts();
-}
 
 function renderSuggestedDebts() {
     const container = document.getElementById("groupSettlements");
@@ -1233,10 +1226,10 @@ function updateSummary() {
 // ==========================================
 
 async function refreshFinancialData() {
+    // One balances request updates both balances and suggested debts.
     await Promise.all([
         loadExpenses(),
-        loadBalances(),
-        loadSuggestedDebts()
+        loadBalances()
     ]);
 
     updateSummary();
