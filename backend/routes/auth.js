@@ -29,7 +29,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 // Store uploaded images temporarily in memory.
-// Cloudinary will store them permanently.
+// Cloudinary stores them permanently.
 const upload = multer({
     storage: multer.memoryStorage(),
     fileFilter,
@@ -38,7 +38,10 @@ const upload = multer({
     }
 });
 
-// Upload image buffer to Cloudinary
+// ==========================================
+// UPLOAD IMAGE TO CLOUDINARY
+// ==========================================
+
 const uploadToCloudinary = (buffer, userId) => {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -459,7 +462,6 @@ router.post(
                 });
             }
 
-            // Upload image to Cloudinary
             uploadedImage = await uploadToCloudinary(
                 req.file.buffer,
                 req.user.userId
@@ -467,7 +469,6 @@ router.post(
 
             const pictureUrl = uploadedImage.secure_url;
 
-            // Save Cloudinary URL in PostgreSQL
             const result = await pool.query(
                 `UPDATE users
                  SET profile_picture_url = $1,
@@ -497,7 +498,6 @@ router.post(
         } catch (error) {
             console.error("Picture upload error:", error.message);
 
-            // Remove uploaded image if database update fails
             if (uploadedImage) {
                 try {
                     await cloudinary.uploader.destroy(
@@ -526,6 +526,22 @@ router.post(
 
 router.delete("/profile-picture", authMiddleware, async (req, res) => {
     try {
+        // Get the current profile picture URL
+        const currentUser = await pool.query(
+            "SELECT profile_picture_url FROM users WHERE id = $1",
+            [req.user.userId]
+        );
+
+        if (currentUser.rows.length === 0) {
+            return res.status(404).json({
+                status: "error",
+                message: "User not found."
+            });
+        }
+
+        const pictureUrl = currentUser.rows[0].profile_picture_url;
+
+        // Remove the picture URL from PostgreSQL
         const result = await pool.query(
             `UPDATE users
              SET profile_picture_url = NULL,
@@ -535,16 +551,38 @@ router.delete("/profile-picture", authMiddleware, async (req, res) => {
             [req.user.userId]
         );
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({
-                status: "error",
-                message: "User not found."
-            });
+        // Delete the image from Cloudinary
+        if (pictureUrl) {
+            try {
+                const parsedUrl = new URL(pictureUrl);
+
+                if (parsedUrl.hostname === "res.cloudinary.com") {
+                    let imagePath = parsedUrl.pathname.split("/upload/")[1];
+
+                    if (imagePath) {
+                        // Remove Cloudinary version prefix
+                        imagePath = imagePath.replace(/^v\d+\//, "");
+
+                        // Remove file extension
+                        const publicId = imagePath.replace(/\.[^/.]+$/, "");
+
+                        // Only delete Spliara profile images
+                        if (publicId.startsWith("spliara/profiles/")) {
+                            await cloudinary.uploader.destroy(publicId);
+                        }
+                    }
+                }
+            } catch (cloudinaryError) {
+                console.error(
+                    "Cloudinary picture cleanup error:",
+                    cloudinaryError.message
+                );
+            }
         }
 
         return res.status(200).json({
             status: "success",
-            message: "Profile picture removed.",
+            message: "Profile picture removed successfully.",
             user: result.rows[0]
         });
 
