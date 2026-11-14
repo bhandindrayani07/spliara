@@ -3,10 +3,9 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 
 const pool = require("../config/db");
+const cloudinary = require("../config/cloudinary");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -15,25 +14,12 @@ const router = express.Router();
 // PROFILE PICTURE UPLOAD CONFIGURATION
 // ==========================================
 
-const uploadDirectory = path.join(__dirname, "../uploads/profiles");
-
-fs.mkdirSync(uploadDirectory, { recursive: true });
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDirectory);
-    },
-
-    filename: (req, file, cb) => {
-        const extension = path.extname(file.originalname).toLowerCase();
-        const uniqueName = `profile-${req.user.userId}-${Date.now()}${extension}`;
-
-        cb(null, uniqueName);
-    }
-});
-
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
 
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
@@ -42,13 +28,37 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
+// Store uploaded images temporarily in memory.
+// Cloudinary will store them permanently.
 const upload = multer({
-    storage,
+    storage: multer.memoryStorage(),
     fileFilter,
     limits: {
         fileSize: 2 * 1024 * 1024
     }
 });
+
+// Upload image buffer to Cloudinary
+const uploadToCloudinary = (buffer, userId) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            {
+                folder: "spliara/profiles",
+                public_id: `profile-${userId}-${Date.now()}`,
+                resource_type: "image"
+            },
+            (error, result) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                resolve(result);
+            }
+        );
+
+        stream.end(buffer);
+    });
+};
 
 // ==========================================
 // USER REGISTRATION
@@ -439,6 +449,8 @@ router.post(
         });
     },
     async (req, res) => {
+        let uploadedImage = null;
+
         try {
             if (!req.file) {
                 return res.status(400).json({
@@ -447,9 +459,15 @@ router.post(
                 });
             }
 
-            const pictureUrl =
-                `/uploads/profiles/${req.file.filename}`;
+            // Upload image to Cloudinary
+            uploadedImage = await uploadToCloudinary(
+                req.file.buffer,
+                req.user.userId
+            );
 
+            const pictureUrl = uploadedImage.secure_url;
+
+            // Save Cloudinary URL in PostgreSQL
             const result = await pool.query(
                 `UPDATE users
                  SET profile_picture_url = $1,
@@ -460,7 +478,9 @@ router.post(
             );
 
             if (result.rows.length === 0) {
-                fs.unlinkSync(req.file.path);
+                await cloudinary.uploader.destroy(
+                    uploadedImage.public_id
+                );
 
                 return res.status(404).json({
                     status: "error",
@@ -477,8 +497,18 @@ router.post(
         } catch (error) {
             console.error("Picture upload error:", error.message);
 
-            if (req.file && fs.existsSync(req.file.path)) {
-                fs.unlinkSync(req.file.path);
+            // Remove uploaded image if database update fails
+            if (uploadedImage) {
+                try {
+                    await cloudinary.uploader.destroy(
+                        uploadedImage.public_id
+                    );
+                } catch (cleanupError) {
+                    console.error(
+                        "Cloudinary cleanup error:",
+                        cleanupError.message
+                    );
+                }
             }
 
             return res.status(500).json({
